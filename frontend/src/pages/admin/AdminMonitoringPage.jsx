@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import MonitoringLaporan from '../../components/inspection/MonitoringLaporan';
 
@@ -10,10 +10,14 @@ export default function AdminMonitoringPage() {
     loadMonitoring,
   } = useOutletContext();
   const [filters, setFilters] = useState({
-    hasilUmum: '',
+    status: '',
     tanggalMulai: '',
     tanggalSelesai: '',
   });
+
+  useEffect(() => {
+    loadMonitoring(filters);
+  }, [filters]);
 
   return (
     <div className="space-y-4">

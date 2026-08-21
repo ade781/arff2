@@ -8,10 +8,8 @@ const healthRoutes = require('./healthRoutes');
 
 const router = express.Router();
 
-// Health Check
 router.use('/health', healthRoutes);
 
-// API Routes
 router.use('/autentikasi', autentikasiRoutes);
 router.use('/item', itemRoutes);
 router.use('/laporan-anggota', laporanAnggotaRoutes);

@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance';
 export const itemService = {
   async getAllItems(params = {}) {
     const res = await axiosInstance.get('/item', { params });
-    return res.data.data.items || res.data.data.equipment || [];
+    return res.data.data.items || [];
   },
 
   async getItemById(id) {

@@ -19,9 +19,9 @@ export default function AdminEquipmentPage() {
   function startEdit(item) {
     setEditingItem(item);
     setItemForm({
-      kodeItem: item.kodeItem || item.kodeEquipment || '',
-      namaItem: item.namaItem || item.nama || '',
-      jenis: item.jenis || item.tipe || 'apar',
+      kodeItem: item.kodeItem || '',
+      namaItem: item.namaItem || '',
+      jenis: item.jenis || 'apar',
       zona: String(item.zona || '1'),
       gedung: item.gedung || '',
       lantai: item.lantai || 'Lantai 1',
@@ -73,7 +73,7 @@ export default function AdminEquipmentPage() {
   }
 
   async function deleteItem(item) {
-    const confirmed = window.confirm(`Hapus equipment ${item.kodeItem || item.kodeEquipment}?`);
+    const confirmed = window.confirm(`Hapus equipment ${item.kodeItem}?`);
     if (!confirmed) return;
 
     try {
@@ -96,10 +96,9 @@ export default function AdminEquipmentPage() {
 
   return (
     <div className="space-y-4">
-      {/* Modal Single QR */}
+
       <QrModal qrData={qrData} onClose={() => setQrData(null)} />
 
-      {/* Modal Form Tambah / Edit Equipment */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
           <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -115,7 +114,6 @@ export default function AdminEquipmentPage() {
         </div>
       )}
 
-      {/* Tabel Master Equipment Full Width */}
       <ItemTable
         items={items}
         onEdit={startEdit}

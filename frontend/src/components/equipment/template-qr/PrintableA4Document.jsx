@@ -25,7 +25,7 @@ export default function PrintableA4Document({
                 : 'auto',
           }}
         >
-          {/* Header Cetak */}
+
           <div className="border-b border-gray-300 pb-1 mb-2 flex items-center justify-between text-[9pt] font-mono text-gray-600">
             <span className="font-bold">ARFF YIA - LEMBAR STIKER QR EQUIPMENT</span>
             <span>
@@ -33,7 +33,6 @@ export default function PrintableA4Document({
             </span>
           </div>
 
-          {/* Grid 3x4 Cetak (Lebih Rapat & QR Lebih Besar) */}
           <div className="grid grid-cols-3 grid-rows-4 gap-2 flex-1">
             {pageItems.map((item) => (
               <div
@@ -71,7 +70,6 @@ export default function PrintableA4Document({
               </div>
             ))}
 
-            {/* Slot Kosong pelengkap grid 3x4 */}
             {Array.from({ length: Math.max(0, ITEMS_PER_PAGE - pageItems.length) }).map(
               (_, idx) => (
                 <div
@@ -83,7 +81,6 @@ export default function PrintableA4Document({
             )}
           </div>
 
-          {/* Footer Cetak */}
           <div className="border-t border-gray-300 pt-1 mt-2 flex items-center justify-between text-[8pt] text-gray-500">
             <span>Airport Rescue and Fire Fighting - Yogyakarta International Airport</span>
             <span>Format Standar 3x4 Grid A4</span>

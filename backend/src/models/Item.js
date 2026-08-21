@@ -23,7 +23,7 @@ const Item = sequelize.define(
     jenis: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: 'apar', // 'apar' | 'hydrant'
+      defaultValue: 'apar', 
     },
     zona: {
       type: DataTypes.STRING(10),
@@ -50,20 +50,20 @@ const Item = sequelize.define(
     tipeMedia: {
       type: DataTypes.STRING(50),
       allowNull: true,
-      field: 'tipe_media', // e.g. 'DCP', 'CO2', 'FOAM', 'CLEAN AGENT'
+      field: 'tipe_media', 
     },
     ukuran: {
       type: DataTypes.STRING(30),
-      allowNull: true, // e.g. '6.0 Kg', '5.0 Kg', '23.0 Kg'
+      allowNull: true, 
     },
     tipeHydrant: {
       type: DataTypes.STRING(50),
       allowNull: true,
-      field: 'tipe_hydrant', // e.g. 'IHB', 'OHB', 'SIAMESE', 'PILLAR'
+      field: 'tipe_hydrant', 
     },
     merk: {
       type: DataTypes.STRING(50),
-      allowNull: true, // e.g. 'Zhield', 'Chemguard', 'Yamato'
+      allowNull: true, 
     },
     jumlah: {
       type: DataTypes.INTEGER,

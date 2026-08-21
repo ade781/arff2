@@ -1,5 +1,4 @@
 
-
 function successResponse(res, statusCode = 200, message = 'Berhasil', data = null) {
   return res.status(statusCode).json({
     status: 'success',

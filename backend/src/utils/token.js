@@ -13,7 +13,7 @@ function getJwtSecret() {
 function signToken(user) {
   return jwt.sign(
     {
-      sub: user.id || user.sub,
+      sub: user.id,
       role: user.role,
       username: user.username,
     },

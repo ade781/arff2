@@ -5,18 +5,29 @@ const { successResponse, errorResponse } = require('../utils/response');
 const { presentLaporanAnggota } = require('../utils/laporanPresenter');
 const { exportLaporanToCsv } = require('../utils/csvExporter');
 const { exportHighFidelityZonaExcel } = require('../utils/excelExporter');
+const { cleanQrCode } = require('../utils/qrHelper');
+
+const BULAN_NAMES = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
+
+function getDefaultBulanTahun() {
+  const now = new Date();
+  return `${BULAN_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function getDefaultBulanLalu() {
+  const now = new Date();
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  return `${BULAN_NAMES[prev.getMonth()]} ${prev.getFullYear()}`;
+}
 
 async function submitLaporan(req, res, next) {
   try {
     const {
       kodeQr,
       idItem,
-      hasilUmum,
       status,
       keterangan,
-      catatan,
       penggantian,
-      items,
       checklist,
     } = req.body;
 
@@ -25,24 +36,22 @@ async function submitLaporan(req, res, next) {
     if (idItem) {
       targetItem = await Item.findByPk(idItem);
     } else if (kodeQr) {
-      const cleanKode = kodeQr.startsWith('ARFF-YIA:') ? kodeQr.replace('ARFF-YIA:', '').trim() : kodeQr.trim();
-      targetItem = await Item.findOne({ where: { kodeItem: cleanKode } });
+      targetItem = await Item.findOne({ where: { kodeItem: cleanQrCode(kodeQr) } });
     }
 
     if (!targetItem) {
       return errorResponse(res, 404, 'Equipment item yang diperiksa tidak ditemukan');
     }
 
-    const finalStatus = (status || hasilUmum || 'baik').toLowerCase().trim();
-    const finalKeterangan = (keterangan || catatan || '').trim();
+    const finalStatus = (status || 'baik').toLowerCase().trim();
+    const finalKeterangan = (keterangan || '').trim();
     const finalPenggantian = (penggantian || '').trim();
 
-    let parsedChecklist = Array.isArray(checklist) ? checklist : Array.isArray(items) ? items : [];
+    let parsedChecklist = Array.isArray(checklist) ? checklist : [];
     if (typeof checklist === 'string') {
       try { parsedChecklist = JSON.parse(checklist); } catch (e) {}
     }
 
-    // Jika ada upload file fisik
     let fotoUrl = req.body.foto || null;
     if (req.file) {
       fotoUrl = `/uploads/${req.file.filename}`;
@@ -58,7 +67,6 @@ async function submitLaporan(req, res, next) {
       checklist: parsedChecklist,
     });
 
-    // Update status item di master equipment
     if (finalStatus === 'rusak') {
       await targetItem.update({ status: 'rusak' });
     } else if (finalStatus === 'perlu_perhatian') {
@@ -77,7 +85,6 @@ async function getAllLaporan(req, res, next) {
   try {
     const {
       status,
-      hasilUmum,
       tanggalMulai,
       tanggalSelesai,
       limit = 50,
@@ -85,10 +92,9 @@ async function getAllLaporan(req, res, next) {
     } = req.query;
 
     const where = {};
-    const filterStatus = status || hasilUmum;
 
-    if (filterStatus) {
-      where.status = String(filterStatus).toLowerCase();
+    if (status) {
+      where.status = String(status).toLowerCase();
     }
 
     if (tanggalMulai && tanggalSelesai) {
@@ -150,7 +156,6 @@ async function getAllLaporan(req, res, next) {
     return successResponse(res, 200, 'Data laporan anggota berhasil dimuat', {
       total: count,
       laporan: mapped,
-      inspections: mapped,
     });
   } catch (error) {
     return next(error);
@@ -170,6 +175,10 @@ async function exportCsv(req, res, next) {
           new Date(`${tanggalSelesai}T23:59:59.999Z`),
         ],
       };
+    } else if (tanggalMulai) {
+      where.createdAt = { [Op.gte]: new Date(`${tanggalMulai}T00:00:00.000Z`) };
+    } else if (tanggalSelesai) {
+      where.createdAt = { [Op.lte]: new Date(`${tanggalSelesai}T23:59:59.999Z`) };
     }
 
     const rows = await LaporanAnggota.findAll({
@@ -217,13 +226,12 @@ async function exportExcelZona(req, res, next) {
   try {
     const {
       zona = '1',
-      bulanTahun = 'AGUSTUS 2026',
-      bulanLalu = 'JULI 2026',
+      bulanTahun = getDefaultBulanTahun(),
+      bulanLalu = getDefaultBulanLalu(),
       regu = 'REGU DELTA',
       petugasName,
     } = req.query;
 
-    // Ambil laporan pemeriksaan untuk zona tersebut
     const laporanList = await LaporanAnggota.findAll({
       include: [
         {

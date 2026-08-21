@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { History, LogOut, QrCode, User } from 'lucide-react';
+import { History, LogOut, QrCode } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { laporanAnggotaService } from '../../api/laporanAnggotaService';
 import { getErrorMessage } from '../../api/axiosInstance';
@@ -36,7 +36,7 @@ export default function PetugasLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center">
-      {/* Header Petugas Bersih (Tema Putih) */}
+
       <header className="w-full max-w-md bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30 shadow-xs">
         <div className="flex items-center justify-between">
           <div>
@@ -55,7 +55,6 @@ export default function PetugasLayout() {
           </button>
         </div>
 
-        {/* Tab Navigasi Sederhana */}
         <nav className="flex rounded border border-gray-200 bg-gray-100 p-1 mt-3 text-xs">
           <NavLink
             to="/petugas"
@@ -88,7 +87,6 @@ export default function PetugasLayout() {
         </nav>
       </header>
 
-      {/* Main Content Area */}
       <main className="w-full max-w-md p-4 space-y-4 flex-1 pb-10">
         <NoticeAlert notice={notice} />
         <Outlet

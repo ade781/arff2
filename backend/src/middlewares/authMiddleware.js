@@ -1,5 +1,6 @@
 const { AnggotaArff } = require('../models');
 const { verifyToken } = require('../utils/token');
+const { errorResponse } = require('../utils/response');
 
 function getBearerToken(req) {
   const authorization = req.headers.authorization || '';
@@ -17,20 +18,14 @@ async function authenticate(req, res, next) {
     const token = getBearerToken(req);
 
     if (!token) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Token autentikasi wajib dikirim',
-      });
+      return errorResponse(res, 401, 'Token autentikasi wajib dikirim');
     }
 
     const payload = verifyToken(token);
     const user = await AnggotaArff.findByPk(payload.sub);
 
     if (!user) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Akun anggota ARFF tidak ditemukan',
-      });
+      return errorResponse(res, 401, 'Akun anggota ARFF tidak ditemukan');
     }
 
     req.user = user;
@@ -38,27 +33,19 @@ async function authenticate(req, res, next) {
 
     return next();
   } catch (error) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token autentikasi tidak valid atau telah kadaluarsa',
-    });
+    return errorResponse(res, 401, 'Token autentikasi tidak valid atau telah kadaluarsa');
   }
 }
 
 function authorizeRoles(...roles) {
   return (req, res, next) => {
+
     if (!req.user) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Autentikasi diperlukan',
-      });
+      return errorResponse(res, 401, 'Autentikasi diperlukan');
     }
 
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        status: 'error',
-        message: 'Akses tidak diizinkan untuk role ini',
-      });
+      return errorResponse(res, 403, 'Akses tidak diizinkan untuk role ini');
     }
 
     return next();

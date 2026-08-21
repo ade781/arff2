@@ -11,7 +11,6 @@ const { authenticate, authorizeRoles } = require('../middlewares/authMiddleware'
 
 const router = express.Router();
 
-// Seluruh endpoint pengguna dilindungi khusus Role Admin
 router.use(authenticate);
 router.use(authorizeRoles('admin'));
 

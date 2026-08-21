@@ -55,7 +55,7 @@ export default function AdminRingkasanPage() {
   }
 
   async function deleteItem(item) {
-    const confirmed = window.confirm(`Hapus equipment ${item.kodeItem || item.kodeEquipment}?`);
+    const confirmed = window.confirm(`Hapus equipment ${item.kodeItem}?`);
     if (!confirmed) return;
 
     try {
@@ -69,12 +69,11 @@ export default function AdminRingkasanPage() {
 
   return (
     <div className="space-y-5">
-      {/* Modal Single QR */}
+
       <QrModal qrData={qrData} onClose={() => setQrData(null)} />
 
-      {/* Summary Stat Cards */}
       <section className="grid gap-3.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Card 1: Total Master Equipment */}
+
         <div className="card p-4 bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -92,7 +91,6 @@ export default function AdminRingkasanPage() {
           </div>
         </div>
 
-        {/* Card 2: Laporan Pemeriksaan Petugas */}
         <div className="card p-4 bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -110,7 +108,6 @@ export default function AdminRingkasanPage() {
           </div>
         </div>
 
-        {/* Card 3: Aduan Non-Anggota */}
         <div className="card p-4 bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -128,7 +125,6 @@ export default function AdminRingkasanPage() {
           </div>
         </div>
 
-        {/* Card 4: Perlu Perhatian */}
         <div className="card p-4 bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -147,7 +143,6 @@ export default function AdminRingkasanPage() {
         </div>
       </section>
 
-      {/* Quick Action Hub */}
       <section className="card p-4 bg-white border border-slate-200/80 shadow-xs space-y-3">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">
@@ -219,7 +214,6 @@ export default function AdminRingkasanPage() {
         </div>
       </section>
 
-      {/* Snapshot Master Equipment Preview */}
       <section className="space-y-2">
         <div className="flex items-center justify-between px-1">
           <div>

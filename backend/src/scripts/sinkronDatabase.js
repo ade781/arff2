@@ -6,7 +6,6 @@ async function sinkronDatabase() {
     await sequelize.authenticate();
     console.log('Koneksi ke database MySQL berhasil.');
 
-    // Force sync akan men-drop tabel lama dan membuat 5 tabel baru secara otomatis
     const isForce = process.env.DB_SYNC_FORCE === 'true' || process.argv.includes('--force');
     await sequelize.sync({ force: isForce, alter: !isForce });
 

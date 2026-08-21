@@ -1,10 +1,6 @@
-/**
- * Generate CSV string with UTF-8 BOM for Microsoft Excel compatibility
- * @param {Array} rows - Array of LaporanAnggota Sequelize instances
- * @returns {string} - Formatted CSV
- */
+
 function exportLaporanToCsv(rows = []) {
-  // Header CSV dengan UTF-8 BOM (\uFEFF)
+
   let csv = '\uFEFFNo,Waktu Pemeriksaan,Kode Equipment,Nama Equipment,Jenis,Zona,Lokasi,Expired,Status,Petugas,Catatan Temuan,Tindakan Penggantian,Foto\n';
 
   const escape = (str) => `"${(str || '').toString().replace(/"/g, '""')}"`;

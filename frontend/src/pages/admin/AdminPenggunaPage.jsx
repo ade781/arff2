@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import {
   AlertCircle,
   CheckCircle2,
@@ -20,18 +21,16 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function AdminPenggunaPage() {
   const { user: currentAdmin } = useAuth();
+  const { setNotice } = useOutletContext();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('');
-  const [notice, setNotice] = useState(null);
 
-  // Modal State
   const [formModalOpen, setFormModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null); // null = mode tambah baru
+  const [editingUser, setEditingUser] = useState(null); 
   const [resetModalUser, setResetModalUser] = useState(null);
 
-  // Form Field State
   const [formNama, setFormNama] = useState('');
   const [formUsername, setFormUsername] = useState('');
   const [formPassword, setFormPassword] = useState('');
@@ -39,7 +38,6 @@ export default function AdminPenggunaPage() {
   const [formRegu, setFormRegu] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Reset Password State
   const [newPassword, setNewPassword] = useState('');
   const [resetting, setResetting] = useState(false);
 
@@ -108,7 +106,7 @@ export default function AdminPenggunaPage() {
 
     try {
       if (editingUser) {
-        // Mode Update
+
         await penggunaService.updatePengguna(editingUser.id, {
           nama: formNama,
           username: formUsername,
@@ -117,7 +115,7 @@ export default function AdminPenggunaPage() {
         });
         setNotice({ type: 'success', message: `Data pengguna '${formUsername}' berhasil diperbarui` });
       } else {
-        // Mode Create
+
         await penggunaService.createPengguna({
           nama: formNama,
           username: formUsername,
@@ -180,25 +178,7 @@ export default function AdminPenggunaPage() {
 
   return (
     <div className="space-y-5">
-      {/* Alert Notice */}
-      {notice && (
-        <div
-          className={`flex items-start gap-2.5 rounded-lg border p-3 text-xs animate-in fade-in duration-150 ${
-            notice.type === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-              : 'border-red-200 bg-red-50 text-red-800'
-          }`}
-        >
-          {notice.type === 'success' ? (
-            <CheckCircle2 className="shrink-0 mt-0.5 text-emerald-600" size={15} />
-          ) : (
-            <AlertCircle className="shrink-0 mt-0.5 text-red-600" size={15} />
-          )}
-          <span>{notice.message}</span>
-        </div>
-      )}
 
-      {/* Summary Cards */}
       <section className="grid gap-3.5 grid-cols-1 sm:grid-cols-3">
         <div className="card p-4 bg-white border border-gray-200 shadow-xs flex items-center justify-between">
           <div>
@@ -240,9 +220,8 @@ export default function AdminPenggunaPage() {
         </div>
       </section>
 
-      {/* Main Table Card */}
       <section className="card p-5 space-y-4 bg-white border border-gray-200 shadow-xs">
-        {/* Toolbar Header */}
+
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
           <div>
             <h2 className="text-sm font-bold uppercase text-gray-900 tracking-wide">
@@ -276,7 +255,6 @@ export default function AdminPenggunaPage() {
           </div>
         </div>
 
-        {/* Filter Controls */}
         <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-12 text-xs">
           <div className="relative sm:col-span-8 flex items-center">
             <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
@@ -301,7 +279,6 @@ export default function AdminPenggunaPage() {
           </div>
         </div>
 
-        {/* User Table */}
         <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="w-full text-left text-xs border-collapse">
             <thead className="bg-gray-50 border-b border-gray-200 text-gray-700 font-bold uppercase text-[11px] tracking-wider">
@@ -418,7 +395,6 @@ export default function AdminPenggunaPage() {
         </div>
       </section>
 
-      {/* MODAL 1: FORM TAMBAH / EDIT PENGGUNA */}
       {formModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-2xs">
           <div className="card w-full max-w-md bg-white rounded-xl shadow-xl p-5 space-y-4">
@@ -535,7 +511,6 @@ export default function AdminPenggunaPage() {
         </div>
       )}
 
-      {/* MODAL 2: RESET PASSWORD */}
       {resetModalUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-2xs">
           <div className="card w-full max-w-sm bg-white rounded-xl shadow-xl p-5 space-y-4">

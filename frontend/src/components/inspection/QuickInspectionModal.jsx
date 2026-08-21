@@ -5,13 +5,13 @@ import ZoneBadge from '../common/ZoneBadge';
 import ImageUploader from '../common/ImageUploader';
 
 export default function QuickInspectionModal({ item, onSubmit, onClose, loading }) {
-  const [kondisi, setKondisi] = useState('baik'); // 'baik' | 'perlu_perhatian' | 'rusak'
+  const [kondisi, setKondisi] = useState('baik'); 
   const [keterangan, setKeterangan] = useState('');
   const [fotoFile, setFotoFile] = useState(null);
 
   if (!item) return null;
 
-  const target = item.item || item.equipment || item;
+  const target = item.item || item;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -54,14 +54,14 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4">
       <div className="card w-full max-w-lg bg-white rounded-t-2xl sm:rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in slide-in-from-bottom duration-200">
-        {/* Header Modal */}
+
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
           <div>
             <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">
               Input Hasil Pemeriksaan
             </span>
             <h2 className="text-sm font-bold text-gray-900 leading-none mt-0.5">
-              {target.kodeItem || target.kodeEquipment}
+              {target.kodeItem}
             </h2>
           </div>
           <button
@@ -74,13 +74,13 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-4">
-          {/* Card Info Equipment yang di-scan */}
+
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 text-xs">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-gray-900">{target.namaItem || target.nama}</span>
+              <span className="font-bold text-sm text-gray-900">{target.namaItem}</span>
               <div className="flex items-center gap-1">
                 <ZoneBadge zone={target.zona} />
-                <TypeBadge type={target.jenis || target.tipe} />
+                <TypeBadge type={target.jenis} />
               </div>
             </div>
             {target.gedung && (
@@ -103,7 +103,6 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
             ) : null}
           </div>
 
-          {/* Pemilih Kondisi Equipment (3 Tombol Pilihan Utama) */}
           <div className="space-y-2">
             <label className="block text-xs font-bold text-gray-800">
               Kondisi Equipment <span className="text-red-500">*</span>
@@ -135,7 +134,6 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
             </div>
           </div>
 
-          {/* Keterangan / Catatan Temuan (Opsional) */}
           <div className="space-y-1">
             <label className="block text-xs font-medium text-gray-700">
               Keterangan / Catatan Temuan <span className="text-gray-400">(Opsional)</span>
@@ -148,14 +146,12 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
             />
           </div>
 
-          {/* Upload Foto Bukti (Opsional) */}
           <ImageUploader
             file={fotoFile}
             onFileChange={setFotoFile}
             label="Foto Bukti Temuan (Opsional)"
           />
 
-          {/* Tombol Aksi */}
           <div className="pt-2 flex items-center gap-2">
             <button
               type="button"

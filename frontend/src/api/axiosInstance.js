@@ -6,7 +6,6 @@ const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Request Interceptor: Menambahkan Authorization Token otomatis
 axiosInstance.interceptors.request.use(
   (config) => {
     const saved = localStorage.getItem('arff-session');
@@ -17,7 +16,7 @@ axiosInstance.interceptors.request.use(
           config.headers.Authorization = `Bearer ${parsed.token}`;
         }
       } catch (e) {
-        // Abaikan parse error
+
       }
     }
     return config;
@@ -25,7 +24,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response Interceptor: Menangani error global & 401 Unauthorized
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

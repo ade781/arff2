@@ -20,7 +20,7 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
   }
 
   function resetFilters() {
-    onFiltersChange({ hasilUmum: '', tanggalMulai: '', tanggalSelesai: '' });
+    onFiltersChange({ status: '', tanggalMulai: '', tanggalSelesai: '' });
   }
 
   async function handleExportCsv() {
@@ -41,7 +41,7 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
     }
   }
 
-  const isFiltered = filters.hasilUmum || filters.tanggalMulai || filters.tanggalSelesai;
+  const isFiltered = filters.status || filters.tanggalMulai || filters.tanggalSelesai;
 
   return (
     <section className="card p-4 space-y-3">
@@ -90,15 +90,14 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
         </div>
       </div>
 
-      {/* Filter Bar */}
       <div className="grid gap-2 sm:grid-cols-12 items-end">
         {subTab === 'anggota' ? (
           <div className="sm:col-span-4">
             <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
             <select
               className="field text-xs cursor-pointer"
-              value={filters.hasilUmum}
-              onChange={(e) => updateFilter('hasilUmum', e.target.value)}
+              value={filters.status || ''}
+              onChange={(e) => updateFilter('status', e.target.value)}
             >
               <option value="">Semua Status</option>
               <option value="baik">Baik</option>
@@ -146,7 +145,6 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
         </div>
       </div>
 
-      {/* Subtab: Laporan Anggota */}
       {subTab === 'anggota' ? (
         <div className="space-y-2">
           {laporanAnggota.length ? laporanAnggota.map((lap) => {
@@ -158,12 +156,12 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-1.5 font-medium text-gray-900">
-                      <span>{lap.item?.namaItem || lap.equipment?.nama || `Equipment #${lap.idItem}`}</span>
-                      <span className="font-mono text-gray-500">[{lap.item?.kodeItem || lap.equipment?.kodeEquipment || '-'}]</span>
+                      <span>{lap.item?.namaItem || `Equipment #${lap.idItem}`}</span>
+                      <span className="font-mono text-gray-500">[{lap.item?.kodeItem || '-'}]</span>
                       {lap.item?.zona ? <ZoneBadge zone={lap.item.zona} /> : null}
                     </div>
                     <p className="text-[11px] text-gray-500 mt-0.5">
-                      Petugas: {lap.petugas?.nama || 'Petugas'} | {new Date(lap.createdAt || lap.waktuPemeriksaan).toLocaleString('id-ID')}
+                      Petugas: {lap.petugas?.nama || 'Petugas'} | {new Date(lap.createdAt).toLocaleString('id-ID')}
                     </p>
                   </div>
 
@@ -227,7 +225,6 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
         </div>
       ) : null}
 
-      {/* Subtab: Laporan Non-Anggota */}
       {subTab === 'non_anggota' ? (
         <div className="space-y-2">
           {laporanNonAnggota.length ? laporanNonAnggota.map((aduan) => {

@@ -4,7 +4,6 @@ import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
-  Flame,
   Loader2,
   MessageSquareWarning,
   QrCode,
@@ -16,7 +15,7 @@ import { laporanNonAnggotaService } from '../../api/laporanNonAnggotaService';
 import { getErrorMessage } from '../../api/axiosInstance';
 import ItemSummary from '../../components/equipment/ItemSummary';
 
-export default function AduanNonAnggotaPage({ onBackToLogin }) {
+export default function AduanNonAnggotaPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [kontak, setKontak] = useState('');
@@ -81,7 +80,7 @@ export default function AduanNonAnggotaPage({ onBackToLogin }) {
   return (
     <main className="min-h-screen bg-slate-100/70 flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 sm:p-7 space-y-4">
-        {/* Header Form Aduan */}
+
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shadow-xs">
@@ -100,17 +99,13 @@ export default function AduanNonAnggotaPage({ onBackToLogin }) {
           <button
             className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 rounded-lg px-2.5 py-1.5 cursor-pointer transition"
             type="button"
-            onClick={() => {
-              if (onBackToLogin) onBackToLogin();
-              else navigate('/login');
-            }}
+            onClick={() => navigate('/login')}
           >
             <ArrowLeft size={13} />
             <span>Login Petugas</span>
           </button>
         </div>
 
-        {/* Notice Alert */}
         {notice ? (
           <div
             className={`flex items-start gap-2.5 rounded-xl border p-3 text-xs animate-in fade-in duration-150 ${
@@ -128,7 +123,6 @@ export default function AduanNonAnggotaPage({ onBackToLogin }) {
           </div>
         ) : null}
 
-        {/* Form Isi Aduan */}
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
@@ -188,7 +182,6 @@ export default function AduanNonAnggotaPage({ onBackToLogin }) {
             </p>
           </div>
 
-          {/* Equipment Preview Summary */}
           <ItemSummary item={itemData} />
 
           <div>

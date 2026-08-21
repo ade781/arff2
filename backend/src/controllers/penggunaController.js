@@ -1,26 +1,14 @@
 const bcrypt = require('bcryptjs');
 const { AnggotaArff } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
-
-function presentPengguna(user) {
-  return {
-    id: user.id,
-    nama: user.nama,
-    username: user.username,
-    unit: user.unit || 'ARFF YIA',
-    regu: user.regu || null,
-    role: user.role,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  };
-}
+const { presentPengguna } = require('../utils/penggunaPresenter');
 
 async function getAllPengguna(req, res, next) {
   try {
     const users = await AnggotaArff.findAll({
       attributes: ['id', 'nama', 'username', 'unit', 'regu', 'role', 'createdAt', 'updatedAt'],
       order: [
-        ['role', 'ASC'], // 'admin' dulu, baru 'petugas'
+        ['role', 'ASC'], 
         ['nama', 'ASC'],
       ],
     });

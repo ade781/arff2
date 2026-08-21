@@ -9,7 +9,7 @@ export default function RekapInspectionTable({
 }) {
   return (
     <div className="space-y-4">
-      {/* Header Lembar Format Resmi */}
+
       <div className="border-b-2 border-gray-900 pb-3 text-center space-y-0.5">
         <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
           YOGYAKARTA INTERNATIONAL AIRPORT
@@ -24,7 +24,6 @@ export default function RekapInspectionTable({
         </div>
       </div>
 
-      {/* Tabel Data Berkelompok per Gedung & Lantai */}
       <div className="overflow-x-auto rounded border border-gray-300">
         <table className="w-full text-left text-xs border-collapse font-sans">
           <thead className="bg-gray-100 border-b-2 border-gray-300 text-gray-800 font-bold uppercase text-[10.5px]">
@@ -65,14 +64,13 @@ export default function RekapInspectionTable({
 
                       return (
                         <React.Fragment key={`${gedungName}-${lantaiName}`}>
-                          {/* Baris Sub-Header Gedung & Lantai */}
+
                           <tr className="bg-slate-100 font-bold text-gray-900 border-y border-gray-300">
                             <td colSpan={14} className="px-3 py-1.5 tracking-wide text-xs">
                               🏢 {gedungName.toUpperCase()} — ( {lantaiName.toUpperCase()} )
                             </td>
                           </tr>
 
-                          {/* Baris Equipment */}
                           {itemsInLantai.map((item) => {
                             const lap = laporanMap[item.kodeItem] || null;
                             const isApar = item.jenis === 'apar';
@@ -83,7 +81,6 @@ export default function RekapInspectionTable({
                               !isApar &&
                               (item.tipeHydrant === 'OHB' || item.namaItem?.includes('OHB'));
 
-                            // Kondisi Bulan Berjalan
                             let badgeClass = 'text-gray-600 bg-gray-100';
                             let kondisiText = 'Siap Operasi';
 

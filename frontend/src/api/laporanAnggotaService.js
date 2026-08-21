@@ -1,9 +1,9 @@
-import axiosInstance, { API_BASE_URL } from './axiosInstance';
+import axiosInstance from './axiosInstance';
 
 export const laporanAnggotaService = {
   async getAllLaporan(params = {}) {
     const res = await axiosInstance.get('/laporan-anggota', { params });
-    return res.data.data.laporan || res.data.data.inspections || [];
+    return res.data.data.laporan || [];
   },
 
   async submitLaporan(payload, file = null) {

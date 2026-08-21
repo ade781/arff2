@@ -18,7 +18,7 @@ export default function RekapFilterToolbar({
   return (
     <div className="card p-3.5 bg-white border border-gray-200 shadow-xs space-y-2.5 no-print">
       <div className="grid gap-2 grid-cols-1 sm:grid-cols-12 text-xs">
-        {/* Search */}
+
         <div className="relative sm:col-span-3 flex items-center">
           <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />
           <input
@@ -29,7 +29,6 @@ export default function RekapFilterToolbar({
           />
         </div>
 
-        {/* Filter Bulan */}
         <div className="sm:col-span-3">
           <select
             className="field text-xs h-8.5 cursor-pointer font-medium"
@@ -44,7 +43,6 @@ export default function RekapFilterToolbar({
           </select>
         </div>
 
-        {/* Pemilih Regu (Dinamis / Rolling Shift) */}
         <div className="sm:col-span-2">
           <select
             className="field text-xs h-8.5 cursor-pointer font-semibold text-blue-700 bg-blue-50/50 border-blue-200"
@@ -60,7 +58,6 @@ export default function RekapFilterToolbar({
           </select>
         </div>
 
-        {/* Filter Gedung */}
         <div className="sm:col-span-2">
           <select
             className="field text-xs h-8.5 cursor-pointer"
@@ -76,7 +73,6 @@ export default function RekapFilterToolbar({
           </select>
         </div>
 
-        {/* Filter Status */}
         <div className="sm:col-span-2">
           <select
             className="field text-xs h-8.5 cursor-pointer"

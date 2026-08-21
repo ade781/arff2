@@ -10,12 +10,9 @@ function presentItem(item) {
   return {
     id: plain.id,
     kodeItem: plain.kodeItem,
-    kodeEquipment: plain.kodeItem,
     kodeQr: buildQrPayload(plain.kodeItem),
-    nama: plain.namaItem,
     namaItem: plain.namaItem,
     jenis: plain.jenis,
-    tipe: plain.jenis,
     zona: plain.zona,
     gedung: plain.gedung || null,
     lantai: plain.lantai || null,

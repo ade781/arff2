@@ -1,6 +1,6 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const { AnggotaArff, Item, NonAnggota, LaporanAnggota, LaporanNonAnggota, sequelize } = require('../models');
+const { AnggotaArff, Item, sequelize } = require('../models');
 
 async function isiDataAwal() {
   try {
@@ -31,7 +31,6 @@ async function isiDataAwal() {
       },
     });
 
-    // Sample Items
     const sampleItems = [
       {
         kodeItem: 'APAR-A-001',

@@ -19,7 +19,7 @@ export default function A4SheetPreview({
 
   return (
     <section className="card p-4 space-y-3 bg-white border border-gray-200 shadow-xs">
-      {/* Header Kontrol Preview */}
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b border-gray-100">
         <div>
           <h2 className="text-xs font-bold uppercase text-gray-900 flex items-center gap-1.5">
@@ -44,7 +44,6 @@ export default function A4SheetPreview({
         </div>
       </div>
 
-      {/* Baris Navigasi Halaman A4 */}
       <div className="flex items-center justify-between bg-gray-50 px-3 py-1.5 rounded border border-gray-200 text-xs">
         <div className="flex items-center gap-2">
           <span className="text-gray-600 font-medium">Lembar A4:</span>
@@ -78,13 +77,12 @@ export default function A4SheetPreview({
         </div>
       </div>
 
-      {/* Kertas Preview A4 */}
       <div className="overflow-x-auto p-1 bg-gray-100 rounded border border-gray-200 flex justify-center">
         <div
           className="bg-white border border-gray-300 shadow rounded-sm p-3 w-full max-w-[195mm] min-h-[250mm] flex flex-col justify-between"
           style={{ boxSizing: 'border-box' }}
         >
-          {/* Header Kertas */}
+
           <div className="border-b border-gray-200 pb-1 mb-1.5 flex items-center justify-between text-[9px] text-gray-500 font-mono">
             <span className="font-bold">ARFF YIA - LEMBAR STIKER QR</span>
             <span>
@@ -92,7 +90,6 @@ export default function A4SheetPreview({
             </span>
           </div>
 
-          {/* Grid 3x4 Kotak Stiker */}
           {currentPageItems.length > 0 ? (
             <div className="grid grid-cols-3 grid-rows-4 gap-1.5 flex-1">
               {currentPageItems.map((item) => (
@@ -116,7 +113,6 @@ export default function A4SheetPreview({
             </div>
           )}
 
-          {/* Footer Kertas */}
           <div className="border-t border-gray-200 pt-1 mt-1.5 flex items-center justify-between text-[8px] text-gray-400">
             <span>Airport Rescue and Fire Fighting - YIA</span>
             <span>Ukuran Kertas: A4 (3x4 Grid)</span>

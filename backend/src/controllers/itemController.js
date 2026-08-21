@@ -4,15 +4,14 @@ const { Item } = require('../models');
 const { CHECKLISTS } = require('../constants/checklists');
 const { successResponse, errorResponse } = require('../utils/response');
 const { buildQrPayload, presentItem } = require('../utils/itemPresenter');
+const { cleanQrCode } = require('../utils/qrHelper');
 
 async function createItem(req, res, next) {
   try {
     const {
       kodeItem,
       namaItem,
-      nama,
       jenis,
-      tipe,
       zona,
       gedung,
       lantai,
@@ -28,8 +27,8 @@ async function createItem(req, res, next) {
     } = req.body;
 
     const finalKodeItem = (kodeItem || '').trim();
-    const finalNamaItem = (namaItem || nama || '').trim();
-    const finalJenis = (jenis || tipe || 'apar').toLowerCase().trim();
+    const finalNamaItem = (namaItem || '').trim();
+    const finalJenis = (jenis || 'apar').toLowerCase().trim();
     const finalZona = (zona || '1').toUpperCase().trim();
     const finalLokasi = (lokasi || '').trim();
     const finalStatus = (status || 'aktif').toLowerCase().trim();
@@ -75,11 +74,11 @@ async function createItem(req, res, next) {
 
 async function getAllItems(req, res, next) {
   try {
-    const { zona, jenis, tipe, gedung, lantai, status, search } = req.query;
+    const { zona, jenis, gedung, lantai, status, search } = req.query;
     const where = {};
 
     if (zona) where.zona = String(zona).toUpperCase();
-    if (jenis || tipe) where.jenis = String(jenis || tipe).toLowerCase();
+    if (jenis) where.jenis = String(jenis).toLowerCase();
     if (gedung) where.gedung = String(gedung);
     if (lantai) where.lantai = String(lantai);
     if (status) where.status = String(status).toLowerCase();
@@ -106,7 +105,6 @@ async function getAllItems(req, res, next) {
 
     return successResponse(res, 200, 'Data equipment berhasil dimuat', {
       items: mapped,
-      equipment: mapped,
     });
   } catch (error) {
     return next(error);
@@ -128,7 +126,6 @@ async function getItemById(req, res, next) {
 
     return successResponse(res, 200, 'Detail equipment berhasil dimuat', {
       item: data,
-      equipment: data,
       qrPayload,
       qrCodeDataUrl,
       checklist,
@@ -140,11 +137,8 @@ async function getItemById(req, res, next) {
 
 async function getItemByQr(req, res, next) {
   try {
-    const rawQr = decodeURIComponent(req.params.kodeQr || '').trim();
-
-    const kodeItem = rawQr.startsWith('ARFF-YIA:')
-      ? rawQr.replace('ARFF-YIA:', '').trim()
-      : rawQr;
+    const rawQr = decodeURIComponent(req.params.kodeQr || '');
+    const kodeItem = cleanQrCode(rawQr);
 
     const item = await Item.findOne({ where: { kodeItem } });
 
@@ -157,7 +151,6 @@ async function getItemByQr(req, res, next) {
 
     return successResponse(res, 200, 'Data equipment berhasil ditemukan', {
       item: data,
-      equipment: data,
       checklist,
     });
   } catch (error) {
@@ -181,7 +174,6 @@ async function getItemQrCode(req, res, next) {
       qrPayload,
       qrCodeDataUrl,
       item: data,
-      equipment: data,
     });
   } catch (error) {
     return next(error);
@@ -199,9 +191,7 @@ async function updateItem(req, res, next) {
     const {
       kodeItem,
       namaItem,
-      nama,
       jenis,
-      tipe,
       zona,
       gedung,
       lantai,
@@ -217,8 +207,8 @@ async function updateItem(req, res, next) {
     } = req.body;
 
     const finalKodeItem = (kodeItem || item.kodeItem).trim();
-    const finalNamaItem = (namaItem || nama || item.namaItem).trim();
-    const finalJenis = (jenis || tipe || item.jenis).toLowerCase().trim();
+    const finalNamaItem = (namaItem || item.namaItem).trim();
+    const finalJenis = (jenis || item.jenis).toLowerCase().trim();
     const finalZona = (zona || item.zona).toUpperCase().trim();
     const finalLokasi = (lokasi || item.lokasi).trim();
     const finalStatus = (status || item.status).toLowerCase().trim();

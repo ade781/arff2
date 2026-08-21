@@ -33,7 +33,7 @@ export default function ItemForm({ form, onChange, onSubmit, onCancel, loading, 
       </div>
 
       <div className="space-y-2.5">
-        {/* Kode & Nama */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -62,7 +62,6 @@ export default function ItemForm({ form, onChange, onSubmit, onCancel, loading, 
           </div>
         </div>
 
-        {/* Jenis & Zona */}
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Jenis Item</label>
@@ -95,7 +94,6 @@ export default function ItemForm({ form, onChange, onSubmit, onCancel, loading, 
           </div>
         </div>
 
-        {/* Gedung & Lantai */}
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Gedung / Area</label>
@@ -118,7 +116,6 @@ export default function ItemForm({ form, onChange, onSubmit, onCancel, loading, 
           </div>
         </div>
 
-        {/* Spesifikasi Sesuai Jenis */}
         {isApar ? (
           <div className="grid grid-cols-3 gap-2 p-2.5 bg-gray-50 rounded border border-gray-100">
             <div>
@@ -186,7 +183,6 @@ export default function ItemForm({ form, onChange, onSubmit, onCancel, loading, 
           </div>
         )}
 
-        {/* Lokasi & Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">

@@ -31,7 +31,6 @@ export default function ItemTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // Cascading: Daftar gedung hanya diambil dari Zona yang sedang dipilih
   const availableGedungList = useMemo(() => {
     if (!filterZona) return [];
     const set = new Set();
@@ -43,7 +42,6 @@ export default function ItemTable({
     return Array.from(set).sort();
   }, [items, filterZona]);
 
-  // Handler saat Zona berubah: Reset filter Gedung secara otomatis
   function handleZonaChange(val) {
     setFilterZona(val);
     setFilterGedung('');
@@ -67,7 +65,6 @@ export default function ItemTable({
     });
   }, [items, filterZona, filterGedung, filterJenis, searchTerm]);
 
-  // Pagination calculation
   const totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
   const paginatedItems = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -76,7 +73,7 @@ export default function ItemTable({
 
   return (
     <section className="card p-5 space-y-4 bg-white border border-gray-200 shadow-xs">
-      {/* Header Utama & Tombol Aksi */}
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
         <div>
           <h2 className="text-sm font-bold uppercase text-gray-900 tracking-wide">
@@ -114,10 +111,9 @@ export default function ItemTable({
         </div>
       </div>
 
-      {/* Filter Toolbar Hierarkis (Zona -> Gedung -> Jenis -> Search) */}
       <div className="space-y-2 text-xs">
         <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-12">
-          {/* 1. Pilih Zona Terlebih Dahulu (Seperti Provinsi) */}
+
           <div className="sm:col-span-3">
             <label className="block text-[11px] font-bold text-gray-700 mb-1">
               1. Pilih Zona <span className="text-blue-600">*</span>
@@ -136,7 +132,6 @@ export default function ItemTable({
             </select>
           </div>
 
-          {/* 2. Pilih Gedung (Hanya aktif/tersaring sesuai Zona yang dipilih) */}
           <div className="sm:col-span-3">
             <label className="block text-[11px] font-bold text-gray-700 mb-1">
               2. Pilih Gedung / Area
@@ -165,7 +160,6 @@ export default function ItemTable({
             </select>
           </div>
 
-          {/* 3. Pilih Jenis Equipment */}
           <div className="sm:col-span-2">
             <label className="block text-[11px] font-bold text-gray-700 mb-1">
               3. Jenis
@@ -187,7 +181,6 @@ export default function ItemTable({
             </select>
           </div>
 
-          {/* 4. Search Input */}
           <div className="sm:col-span-4">
             <label className="block text-[11px] font-bold text-gray-700 mb-1">
               4. Cari Kode / Lokasi
@@ -207,7 +200,6 @@ export default function ItemTable({
           </div>
         </div>
 
-        {/* Filter Indicator / Reset */}
         {(filterZona || filterGedung || filterJenis || searchTerm) && (
           <div className="flex items-center justify-between pt-1 text-[11px] text-gray-500">
             <span>
@@ -231,7 +223,6 @@ export default function ItemTable({
         )}
       </div>
 
-      {/* Tabel Data Full Width */}
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-xs">
         <table className="w-full text-left text-xs border-collapse">
           <thead className="bg-gray-50 border-b border-gray-200 text-gray-700 font-bold uppercase text-[11px] tracking-wider">
@@ -340,7 +331,6 @@ export default function ItemTable({
         </table>
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-gray-600">
         <div className="flex items-center gap-2">
           <span>Tampilkan</span>

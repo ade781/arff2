@@ -34,11 +34,10 @@ export default function QrSelectorPanel({
         </span>
       </div>
 
-      {/* Filter Bar Hierarkis (1. Zona -> 2. Gedung -> 3. Jenis -> 4. Search) */}
       <div className="space-y-2 text-xs">
-        {/* Row 1: Cascading Dropdowns */}
+
         <div className="grid grid-cols-3 gap-1.5">
-          {/* 1. Zona (Wajib pertama seperti provinsi) */}
+
           <div>
             <label className="block text-[10px] font-bold text-gray-700 mb-0.5">
               1. Zona <span className="text-blue-600">*</span>
@@ -57,7 +56,6 @@ export default function QrSelectorPanel({
             </select>
           </div>
 
-          {/* 2. Gedung (Tersaring berdasarkan Zona) */}
           <div>
             <label className="block text-[10px] font-bold text-gray-700 mb-0.5">
               2. Gedung
@@ -83,7 +81,6 @@ export default function QrSelectorPanel({
             </select>
           </div>
 
-          {/* 3. Jenis */}
           <div>
             <label className="block text-[10px] font-bold text-gray-700 mb-0.5">
               3. Jenis
@@ -103,7 +100,6 @@ export default function QrSelectorPanel({
           </div>
         </div>
 
-        {/* Row 2: Search */}
         <div className="relative flex items-center">
           <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />
           <input
@@ -114,7 +110,6 @@ export default function QrSelectorPanel({
           />
         </div>
 
-        {/* Quick Actions */}
         <div className="flex items-center justify-between pt-1 text-[11px]">
           <span className="text-gray-500">
             Hasil: <strong>{filteredItems.length}</strong> item
@@ -139,7 +134,6 @@ export default function QrSelectorPanel({
         </div>
       </div>
 
-      {/* Item List Checklist */}
       <div className="flex-1 overflow-y-auto border border-gray-200 rounded divide-y divide-gray-100 min-h-[350px] max-h-[480px]">
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => {

@@ -18,7 +18,7 @@ export default function QrStickerCard({ item, qrUrl, loading }) {
       className="border border-dashed border-gray-300 rounded-lg p-2 flex flex-col items-center justify-between text-center bg-white hover:border-blue-500 hover:shadow-xs transition"
       style={{ minHeight: '56mm' }}
     >
-      {/* Header Stiker */}
+
       <div className="w-full flex items-center justify-between border-b border-gray-100 pb-1 text-[10px]">
         <span className="font-extrabold text-red-600 tracking-wider">ARFF YIA</span>
         <span className="font-bold text-gray-700 bg-gray-100 px-1.5 py-0.2 rounded text-[9px]">
@@ -26,7 +26,6 @@ export default function QrStickerCard({ item, qrUrl, loading }) {
         </span>
       </div>
 
-      {/* QR Code Utama - Diperbesar Optimal Mengisi Ruang */}
       <div className="my-auto py-1 flex items-center justify-center w-full">
         {qrUrl ? (
           <img
@@ -41,7 +40,6 @@ export default function QrStickerCard({ item, qrUrl, loading }) {
         )}
       </div>
 
-      {/* Footer Info Equipment */}
       <div className="w-full border-t border-gray-100 pt-1 leading-tight">
         <p className="font-mono text-xs font-black text-gray-900 tracking-wide">
           {item.kodeItem}

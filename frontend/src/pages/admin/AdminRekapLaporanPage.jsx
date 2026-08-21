@@ -12,25 +12,39 @@ import RekapSignatureBlock from './rekap-laporan/RekapSignatureBlock';
 import { exportZonaInspectionToExcel } from '../../utils/excelExporter';
 import { laporanAnggotaService } from '../../api/laporanAnggotaService';
 
+const BULAN_NAMES = [
+  'JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI',
+  'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'
+];
+
+function getCurrentBulanTahun() {
+  const now = new Date();
+  return `${BULAN_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function getPreviousBulanTahun() {
+  const now = new Date();
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  return `${BULAN_NAMES[prev.getMonth()]} ${prev.getFullYear()}`;
+}
+
 export default function AdminRekapLaporanPage() {
   const { items = [], loadingItems } = useOutletContext();
 
   const [activeZona, setActiveZona] = useState('1');
-  const [selectedBulan, setSelectedBulan] = useState('AGUSTUS 2026');
+  const [selectedBulan, setSelectedBulan] = useState(getCurrentBulanTahun);
   const [selectedRegu, setSelectedRegu] = useState('Regu Delta');
   const [filterGedung, setFilterGedung] = useState('');
   const [filterKondisi, setFilterKondisi] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [exporting, setExporting] = useState(false);
 
-  // Sync regu default dan reset filter gedung saat zona berganti
   useEffect(() => {
     const cfg = ZONA_CONFIG.find((z) => z.id === activeZona);
     if (cfg) setSelectedRegu(cfg.regu);
     setFilterGedung('');
   }, [activeZona]);
 
-  // Hook data & grouping
   const {
     loadingLaporan,
     laporanMap,
@@ -46,14 +60,13 @@ export default function AdminRekapLaporanPage() {
     searchTerm,
   });
 
-  // Ekspor ke Excel (.xlsx) presisi dengan engine High-Fidelity
   async function handleExportExcel() {
     setExporting(true);
     try {
       const blob = await laporanAnggotaService.exportExcelZona({
         zona: activeZona,
         bulanTahun: selectedBulan,
-        bulanLalu: selectedBulan.startsWith('AGUSTUS') ? 'JULI 2026' : 'BULAN LALU',
+        bulanLalu: getPreviousBulanTahun(),
         regu: selectedRegu,
       });
 
@@ -91,7 +104,7 @@ export default function AdminRekapLaporanPage() {
 
   return (
     <div className="space-y-5">
-      {/* HEADER UTAMA HALAMAN REKAP LAPORAN */}
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-gray-200 no-print">
         <div>
           <h1 className="text-base font-bold uppercase tracking-wider text-gray-900 flex items-center gap-2">
@@ -129,7 +142,6 @@ export default function AdminRekapLaporanPage() {
         </div>
       </div>
 
-      {/* TAB PEMILIH ZONA 1 - 4 */}
       <RekapZonaTabs
         items={items}
         activeZona={activeZona}
@@ -139,14 +151,12 @@ export default function AdminRekapLaporanPage() {
         }}
       />
 
-      {/* METRIC CARDS RINGKASAN ZONA */}
       <RekapStatsCards
         stats={stats}
         activeZona={activeZona}
         selectedBulan={selectedBulan}
       />
 
-      {/* TOOLBAR FILTER & PENCARIAN */}
       <RekapFilterToolbar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -161,7 +171,6 @@ export default function AdminRekapLaporanPage() {
         gedungList={gedungList}
       />
 
-      {/* LEMBAR REKAP TABEL (FORMAT PERSIS STANDAR EXCEL ASLI ARFF) */}
       <section className="card p-5 bg-white border border-gray-200 shadow-sm space-y-4">
         <RekapInspectionTable
           groupedData={groupedData}
@@ -171,16 +180,13 @@ export default function AdminRekapLaporanPage() {
           selectedRegu={selectedRegu}
         />
 
-        {/* LEGENDA SIMBOL KONDISI */}
         <RekapSymbolLegend />
 
-        {/* BLOK TANDA TANGAN RESMI PENGESAHAN */}
         <RekapSignatureBlock
           selectedRegu={selectedRegu}
           tglFormatted={tglFormatted}
         />
 
-        {/* Footer Dokumen */}
         <div className="border-t border-gray-300 pt-2 flex flex-col sm:flex-row items-center justify-between text-[10px] text-gray-400">
           <span>Airport Rescue and Fire Fighting (ARFF) - Yogyakarta International Airport</span>
           <span>Dokumen Resmi Rekapitulasi Laporan Inspeksi Zona {activeZona}</span>

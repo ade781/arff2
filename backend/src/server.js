@@ -23,8 +23,16 @@ const server = app.listen(port, '0.0.0.0', () => {
 
 async function shutdown(signal) {
   console.log(`${signal} diterima, menutup server...`);
+
+  const forceTimer = setTimeout(() => {
+    console.warn('Shutdown timeout — force exit.');
+    process.exit(1);
+  }, 10000);
+  forceTimer.unref();
+
   server.close(async () => {
     await sequelize.close();
+    clearTimeout(forceTimer);
     process.exit(0);
   });
 }

@@ -22,7 +22,7 @@ const LaporanAnggota = sequelize.define(
     status: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: 'baik', // 'baik' | 'perlu_perhatian' | 'rusak'
+      defaultValue: 'baik', 
     },
     keterangan: {
       type: DataTypes.TEXT,

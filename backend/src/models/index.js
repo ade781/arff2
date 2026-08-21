@@ -5,14 +5,12 @@ const NonAnggota = require('./NonAnggota');
 const LaporanAnggota = require('./LaporanAnggota');
 const LaporanNonAnggota = require('./LaporanNonAnggota');
 
-// Relasi Laporan Anggota
 AnggotaArff.hasMany(LaporanAnggota, { foreignKey: 'id_anggota', as: 'laporan' });
 LaporanAnggota.belongsTo(AnggotaArff, { foreignKey: 'id_anggota', as: 'petugas' });
 
 Item.hasMany(LaporanAnggota, { foreignKey: 'id_item', as: 'laporanAnggota' });
 LaporanAnggota.belongsTo(Item, { foreignKey: 'id_item', as: 'item' });
 
-// Relasi Laporan Non Anggota
 NonAnggota.hasMany(LaporanNonAnggota, { foreignKey: 'id_non_anggota', as: 'laporan' });
 LaporanNonAnggota.belongsTo(NonAnggota, { foreignKey: 'id_non_anggota', as: 'pelapor' });
 

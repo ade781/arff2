@@ -5,7 +5,7 @@ import { autentikasiService } from '../../api/autentikasiService';
 import { getErrorMessage } from '../../api/axiosInstance';
 import { useAuth } from '../../context/AuthContext';
 
-export default function LoginPage({ onOpenPublicReport }) {
+export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -34,23 +34,18 @@ export default function LoginPage({ onOpenPublicReport }) {
   }
 
   function handleOpenPublicReport() {
-    if (onOpenPublicReport) {
-      onOpenPublicReport();
-    } else {
-      navigate('/aduan');
-    }
+    navigate('/aduan');
   }
 
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-white rounded-lg border border-gray-200 p-6 shadow-xs">
-        {/* Header Polos Sederhana */}
+
         <div className="mb-6 text-center space-y-1">
           <h1 className="text-lg font-bold text-gray-900">ARFF YIA</h1>
           <p className="text-xs text-gray-500">Sistem Pemeriksaan Fasilitas Bandara</p>
         </div>
 
-        {/* Error Alert */}
         {error ? (
           <div className="mb-4 flex items-center gap-2 rounded border border-red-200 bg-red-50 p-2.5 text-xs text-red-700">
             <AlertCircle size={14} className="shrink-0" />
@@ -58,7 +53,6 @@ export default function LoginPage({ onOpenPublicReport }) {
           </div>
         ) : null}
 
-        {/* Form Login */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -99,7 +93,6 @@ export default function LoginPage({ onOpenPublicReport }) {
           </button>
         </form>
 
-        {/* Link Form Aduan Publik */}
         <div className="mt-6 pt-4 border-t border-gray-100 text-center">
           <button
             className="text-xs text-gray-600 hover:text-gray-900 underline cursor-pointer"

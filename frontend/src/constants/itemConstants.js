@@ -8,7 +8,7 @@ export const STATUS_ITEM = [
   { value: 'aktif', label: 'Aktif' },
   { value: 'perbaikan', label: 'Perbaikan' },
   { value: 'rusak', label: 'Rusak' },
-  { value: 'nonaktif', label: 'Nonaktif' },
+  { value: 'nonaktif', label: 'Nonaktif' }, 
 ];
 
 export const EMPTY_ITEM_FORM = {

@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { LaporanNonAnggota, NonAnggota, Item } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
+const { cleanQrCode } = require('../utils/qrHelper');
 
 async function submitLaporan(req, res, next) {
   try {
@@ -29,8 +30,7 @@ async function submitLaporan(req, res, next) {
     if (idItem) {
       targetItem = await Item.findByPk(idItem);
     } else if (kodeQr) {
-      const cleanKode = kodeQr.startsWith('ARFF-YIA:') ? kodeQr.replace('ARFF-YIA:', '').trim() : kodeQr.trim();
-      targetItem = await Item.findOne({ where: { kodeItem: cleanKode } });
+      targetItem = await Item.findOne({ where: { kodeItem: cleanQrCode(kodeQr) } });
     }
 
     if (!targetItem) {
@@ -60,7 +60,6 @@ async function submitLaporan(req, res, next) {
       foto: fotoUrl,
     });
 
-    // Tandai status item menjadi perbaikan/perhatian
     if (targetItem.status === 'aktif') {
       await targetItem.update({ status: 'perbaikan' });
     }

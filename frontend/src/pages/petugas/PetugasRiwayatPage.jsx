@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
   Clock,
-  Filter,
   History,
   Image as ImageIcon,
   Loader2,
@@ -42,7 +41,6 @@ export default function PetugasRiwayatPage() {
         onClose={() => setPreviewImage(null)}
       />
 
-      {/* Filter & Search Bar */}
       <section className="card p-3 space-y-2.5 bg-white border border-gray-200">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-wider text-gray-800 flex items-center gap-1.5">
@@ -87,7 +85,6 @@ export default function PetugasRiwayatPage() {
         </div>
       </section>
 
-      {/* List Riwayat */}
       <section className="space-y-2">
         {filteredHistory.length > 0 ? (
           filteredHistory.map((lap) => {

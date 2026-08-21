@@ -36,11 +36,10 @@ function parseSheetData(sheet, zona, sheetName) {
     const col3 = cleanString(row[3]);
     const col4 = cleanString(row[4]);
     const col5 = cleanString(row[5]);
-    const col6 = cleanString(row[6]); // IHB
-    const col7 = cleanString(row[7]); // OHB
-    const col13 = cleanString(row[13]); // Keterangan
+    const col6 = cleanString(row[6]); 
+    const col7 = cleanString(row[7]); 
+    const col13 = cleanString(row[13]); 
 
-    // Cek apakah baris ini adalah header seksi lokasi/lantai (misal: "MAIN POWER HOUSE / MPH ( LANTAI 1 )")
     const combinedRowText = row.slice(0, 5).map(cleanString).join(' ').trim();
     if (
       !col0.match(/^\d+(\.\d+)?$/) &&
@@ -50,7 +49,7 @@ function parseSheetData(sheet, zona, sheetName) {
       !combinedRowText.includes('YOGYAKARTA') &&
       !combinedRowText.includes('NOMOR ZONA')
     ) {
-      // Ini sub-area / lantai header
+
       currentSubArea = combinedRowText.replace(/\s+/g, ' ');
       if (combinedRowText.match(/LANTAI\s*(\d+|BASEMENT|MEZZANINE|DASAR|KEBERANGKATAN)/i)) {
         const match = combinedRowText.match(/LANTAI\s*(\d+|BASEMENT|MEZZANINE|DASAR|KEBERANGKATAN)/i);
@@ -67,13 +66,11 @@ function parseSheetData(sheet, zona, sheetName) {
       continue;
     }
 
-    // Identifikasi kode item (misal: A.001, B.045, C.012, D.015, E.001)
     let kodeItem = col1;
     if (!kodeItem && col0.match(/^[A-Z]\.\d+/i)) {
       kodeItem = col0;
     }
 
-    // Jika tidak ada kode item valid, lewati baris
     if (!kodeItem || kodeItem === 'NOMOR ZONA' || kodeItem === 'NOMOR BODY LAMBUNG KENDARAAN') {
       continue;
     }
@@ -90,7 +87,7 @@ function parseSheetData(sheet, zona, sheetName) {
     let tipeMedia = null;
     let ukuran = null;
     let tipeHydrant = null;
-    let merk = null;
+    let merk = null; 
 
     if (mediaRaw.includes('DCP') || mediaRaw.includes('POWDER')) {
       jenis = 'apar';
@@ -129,7 +126,6 @@ function parseSheetData(sheet, zona, sheetName) {
       ukuran = ukuranNum ? `${ukuranNum} Kg` : '6 Kg';
     }
 
-    // Nama item yang representatif
     let namaItem = '';
     if (jenis === 'apar') {
       namaItem = `APAR ${tipeMedia || 'DCP'} ${ukuran || ''} - ${lokasi}`.replace(/\s+/g, ' ').trim();

@@ -101,7 +101,6 @@ export default function InlineQrScanner({ onDetected, disabled }) {
     }
   }
 
-  // Fallback: Scan dari file gambar atau foto kamera langsung
   async function handleFileScan(event) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -126,7 +125,7 @@ export default function InlineQrScanner({ onDetected, disabled }) {
 
   return (
     <div className="card p-3 space-y-3 bg-white border border-gray-200 shadow-xs">
-      {/* Header Pemindai */}
+
       <div className="flex items-center justify-between pb-2 border-b border-gray-100">
         <div>
           <h2 className="text-xs font-bold uppercase text-gray-800">Pemindai QR Equipment</h2>
@@ -143,11 +142,9 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         </button>
       </div>
 
-      {/* Area Kamera Viewfinder */}
       <div className="relative bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center min-h-[250px] max-h-[300px] overflow-hidden">
         <div id={scannerContainerId} className="w-full h-full object-cover" />
 
-        {/* Fallback Jika Kamera Mati / Error */}
         {(!scannerActive || errorMsg) && (
           <div className="absolute inset-0 bg-gray-50/95 flex flex-col items-center justify-center p-4 text-center space-y-2 z-10">
             <CameraOff size={28} className="text-gray-400" />
@@ -185,7 +182,6 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         )}
       </div>
 
-      {/* Hidden File Input untuk Ambil Foto / Upload QR */}
       <input
         ref={fileInputRef}
         type="file"
@@ -195,7 +191,6 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         className="hidden"
       />
 
-      {/* Input Manual Sederhana */}
       <form onSubmit={handleManualSubmit} className="flex items-center gap-2 pt-1">
         <div className="relative flex-1 flex items-center">
           <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />

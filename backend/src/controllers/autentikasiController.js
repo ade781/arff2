@@ -27,7 +27,6 @@ async function login(req, res, next) {
 
     const token = signToken({
       id: user.id,
-      sub: user.id,
       username: user.username,
       role: user.role,
     });
@@ -47,20 +46,16 @@ async function login(req, res, next) {
   }
 }
 
-async function getProfile(req, res, next) {
-  try {
-    return successResponse(res, 200, 'Profil anggota berhasil dimuat', {
-      user: {
-        id: req.user.id,
-        nama: req.user.nama,
-        username: req.user.username,
-        unit: req.user.unit,
-        role: req.user.role,
-      },
-    });
-  } catch (error) {
-    return next(error);
-  }
+function getProfile(req, res) {
+  return successResponse(res, 200, 'Profil anggota berhasil dimuat', {
+    user: {
+      id: req.user.id,
+      nama: req.user.nama,
+      username: req.user.username,
+      unit: req.user.unit,
+      role: req.user.role,
+    },
+  });
 }
 
 module.exports = {

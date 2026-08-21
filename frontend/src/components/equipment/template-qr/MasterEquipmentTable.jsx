@@ -49,7 +49,6 @@ export default function MasterEquipmentTable({
         </div>
       </div>
 
-      {/* Tabel Data Keseluruhan */}
       <div className="overflow-x-auto rounded border border-gray-200">
         <table className="w-full text-left text-xs">
           <thead className="bg-gray-50 border-b border-gray-200 text-gray-700 font-semibold">
@@ -149,7 +148,6 @@ export default function MasterEquipmentTable({
         </table>
       </div>
 
-      {/* Bottom Pagination Controls */}
       <div className="flex items-center justify-between pt-2 text-xs text-gray-600">
         <span className="text-gray-500">
           Halaman <strong>{bottomPage}</strong> dari <strong>{totalBottomPages}</strong> ({items.length} total)

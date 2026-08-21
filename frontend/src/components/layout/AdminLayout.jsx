@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, RefreshCcw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { itemService } from '../../api/itemService';
@@ -43,17 +43,20 @@ export default function AdminLayout() {
 
       const [resAnggota, resNonAnggota] = await Promise.allSettled([
         laporanAnggotaService.getAllLaporan(params),
-        laporanNonAnggotaService.getAllLaporan(),
+        laporanNonAnggotaService.getAllLaporan(params),
       ]);
 
       if (resAnggota.status === 'fulfilled') {
         setLaporanAnggota(resAnggota.value);
+      } else {
+        setNotice({ type: 'error', message: getErrorMessage(resAnggota.reason) });
       }
+
       if (resNonAnggota.status === 'fulfilled') {
         setLaporanNonAnggota(resNonAnggota.value);
+      } else {
+        setNotice({ type: 'error', message: getErrorMessage(resNonAnggota.reason) });
       }
-    } catch (err) {
-      setNotice({ type: 'error', message: getErrorMessage(err) });
     } finally {
       setLoadingMonitoring(false);
     }
@@ -64,7 +67,6 @@ export default function AdminLayout() {
     loadMonitoring();
   }, []);
 
-  // Judul halaman dinamis berdasarkan URL path
   const pageTitle = useMemo(() => {
     const path = location.pathname;
     if (path.includes('/admin/items')) return 'Master Data Equipment';

@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 
-/**
- * Hook untuk men-generate dan meng-cache QR Code Data URL beresolusi tinggi secara asinkron
- */
 export function useQrGeneratorCache(items = []) {
   const [qrCache, setQrCache] = useState({});
   const [generating, setGenerating] = useState(false);

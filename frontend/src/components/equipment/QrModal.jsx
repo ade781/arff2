@@ -18,7 +18,7 @@ export default function QrModal({ qrData, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-2xs">
       <section id="printable-qr-modal" className="card w-full max-w-sm p-4 space-y-3 bg-white rounded-xl shadow-xl">
-        {/* Header Modal */}
+
         <div className="flex items-start justify-between gap-2 pb-2 border-b border-gray-100">
           <div>
             <span className="text-xs font-mono font-bold text-gray-500">{kode}</span>
@@ -33,7 +33,6 @@ export default function QrModal({ qrData, onClose }) {
           </button>
         </div>
 
-        {/* Area QR Code Diperbesar Optimal */}
         <div className="flex flex-col items-center justify-center bg-gray-50 border border-gray-200 rounded-lg p-3">
           <img
             className="h-60 w-60 object-contain rounded bg-white p-1 border border-gray-200 shadow-2xs"
@@ -48,7 +47,6 @@ export default function QrModal({ qrData, onClose }) {
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-2 pt-1">
           <button
             className="h-8.5 inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition"

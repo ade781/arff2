@@ -5,7 +5,6 @@ export function useRekapZonaData({ items = [], activeZona, filterGedung, filterK
   const [laporanList, setLaporanList] = useState([]);
   const [loadingLaporan, setLoadingLaporan] = useState(false);
 
-  // Load all laporan from database
   useEffect(() => {
     async function fetchLaporan() {
       setLoadingLaporan(true);
@@ -21,7 +20,6 @@ export function useRekapZonaData({ items = [], activeZona, filterGedung, filterK
     fetchLaporan();
   }, []);
 
-  // Map laporan by kodeItem for rapid lookup
   const laporanMap = useMemo(() => {
     const map = {};
     laporanList.forEach((lap) => {
@@ -33,12 +31,10 @@ export function useRekapZonaData({ items = [], activeZona, filterGedung, filterK
     return map;
   }, [laporanList]);
 
-  // Items untuk Zona aktif
   const zonaItems = useMemo(() => {
     return items.filter((it) => String(it.zona) === String(activeZona));
   }, [items, activeZona]);
 
-  // List gedung unik di Zona aktif
   const gedungList = useMemo(() => {
     const set = new Set();
     zonaItems.forEach((it) => {
@@ -47,7 +43,6 @@ export function useRekapZonaData({ items = [], activeZona, filterGedung, filterK
     return Array.from(set).sort();
   }, [zonaItems]);
 
-  // Filtered items
   const filteredItems = useMemo(() => {
     return zonaItems.filter((item) => {
       const matchGedung = !filterGedung || item.gedung === filterGedung;
@@ -72,7 +67,6 @@ export function useRekapZonaData({ items = [], activeZona, filterGedung, filterK
     });
   }, [zonaItems, filterGedung, searchTerm, filterKondisi, laporanMap]);
 
-  // Kelompokkan equipment per Gedung -> Lantai
   const groupedData = useMemo(() => {
     const groups = {};
     filteredItems.forEach((item) => {
@@ -86,7 +80,6 @@ export function useRekapZonaData({ items = [], activeZona, filterGedung, filterK
     return groups;
   }, [filteredItems]);
 
-  // Statistik Zona Aktif
   const stats = useMemo(() => {
     let inspectedCount = 0;
     let problemCount = 0;

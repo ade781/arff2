@@ -17,16 +17,13 @@ export default function PetugasScanPage() {
   const [loadingLookup, setLoadingLookup] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  // Saat QR berhasil dideteksi oleh kamera atau input manual
   async function handleDetectedQr(rawCode) {
     if (!rawCode || loadingLookup) return;
 
     setLoadingLookup(true);
     setNotice(null);
 
-    const cleanKode = rawCode.startsWith('ARFF-YIA:')
-      ? rawCode.replace('ARFF-YIA:', '').trim()
-      : rawCode.trim();
+    const cleanKode = rawCode.trim();
 
     try {
       const data = await itemService.getItemByQr(cleanKode);
@@ -42,7 +39,6 @@ export default function PetugasScanPage() {
     }
   }
 
-  // Submit Hasil Pemeriksaan Cepat
   async function handleInspectionSubmit(payload, fotoFile) {
     if (!scannedItem) return;
 
@@ -50,11 +46,11 @@ export default function PetugasScanPage() {
     setNotice(null);
 
     try {
-      const target = scannedItem.item || scannedItem.equipment || scannedItem;
+      const target = scannedItem.item || scannedItem;
       await laporanAnggotaService.submitLaporan(
         {
           idItem: target.id,
-          kodeQr: target.kodeItem || target.kodeEquipment,
+          kodeQr: target.kodeItem,
           ...payload,
         },
         fotoFile
@@ -62,7 +58,7 @@ export default function PetugasScanPage() {
 
       setNotice({
         type: 'success',
-        message: `Pemeriksaan ${target.kodeItem || target.kodeEquipment} berhasil disimpan!`,
+        message: `Pemeriksaan ${target.kodeItem} berhasil disimpan!`,
       });
       setScannedItem(null);
       await loadHistory();
@@ -75,7 +71,7 @@ export default function PetugasScanPage() {
 
   return (
     <div className="space-y-4">
-      {/* Pop-up Aksi Cepat Pasca-Scan */}
+
       <QuickInspectionModal
         item={scannedItem}
         onSubmit={handleInspectionSubmit}
@@ -83,7 +79,6 @@ export default function PetugasScanPage() {
         loading={loadingSubmit}
       />
 
-      {/* 1. Pemindai QR Embedded */}
       <section className="space-y-1.5">
         <InlineQrScanner
           onDetected={handleDetectedQr}
@@ -97,7 +92,6 @@ export default function PetugasScanPage() {
         )}
       </section>
 
-      {/* 2. Snapshot Riwayat Terkini */}
       <section className="card p-3.5 space-y-3 bg-white border border-gray-200">
         <div className="flex items-center justify-between border-b border-gray-100 pb-2">
           <div className="flex items-center gap-1.5">
@@ -120,7 +114,7 @@ export default function PetugasScanPage() {
         <div className="space-y-2">
           {history.length > 0 ? (
             history.slice(0, 3).map((lap) => {
-              const item = lap.item || lap.equipment || {};
+              const item = lap.item || {};
               const tone =
                 lap.status === 'baik' ? 'good' : lap.status === 'rusak' ? 'bad' : 'warn';
 
@@ -133,13 +127,13 @@ export default function PetugasScanPage() {
                     <div>
                       <div className="flex items-center gap-1.5 font-bold text-gray-900">
                         <span className="font-mono">
-                          {item.kodeItem || item.kodeEquipment || `Item #${lap.idItem}`}
+                          {item.kodeItem || `Item #${lap.idItem}`}
                         </span>
                         {item.zona ? <ZoneBadge zone={item.zona} /> : null}
                         {item.jenis ? <TypeBadge type={item.jenis} /> : null}
                       </div>
                       <p className="text-[11px] text-gray-600 font-medium truncate max-w-[200px] mt-0.5">
-                        {item.namaItem || item.nama || 'Equipment ARFF'}
+                        {item.namaItem || 'Equipment ARFF'}
                       </p>
                     </div>
 
@@ -149,7 +143,7 @@ export default function PetugasScanPage() {
                   <div className="flex items-center justify-between text-[10px] text-gray-400 pt-1 border-t border-gray-100">
                     <span className="flex items-center gap-1">
                       <Clock size={10} />
-                      {new Date(lap.createdAt || lap.waktuPemeriksaan).toLocaleString('id-ID', {
+                      {new Date(lap.createdAt).toLocaleString('id-ID', {
                         day: '2-digit',
                         month: 'short',
                         hour: '2-digit',

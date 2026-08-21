@@ -10,38 +10,37 @@ const { notFoundHandler, errorHandler } = require('./middlewares/errorMiddleware
 
 const app = express();
 
-// Security Headers dengan Helmet (Cross-Origin Resource Sharing disesuaikan untuk gambar static)
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
 
-// CORS Config
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,https://localhost:5173').split(',').map(s => s.trim());
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Izinkan request dari localhost, IP lokal WiFi (192.168.x.x), ngrok, dsb.
-      callback(null, true);
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); 
+      }
     },
     credentials: true,
   }),
 );
 
-// Body Parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Static Folder untuk file upload (Foto temuan fisik)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// General API Rate Limiting
 app.use('/api', apiLimiter);
 
-// API Routes
 app.use('/api', apiRoutes);
 
-// Error Handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
