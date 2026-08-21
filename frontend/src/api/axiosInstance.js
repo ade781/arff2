@@ -1,0 +1,44 @@
+import axios from 'axios';
+
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+// Request Interceptor: Menambahkan Authorization Token otomatis
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const saved = localStorage.getItem('arff-session');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed?.token) {
+          config.headers.Authorization = `Bearer ${parsed.token}`;
+        }
+      } catch (e) {
+        // Abaikan parse error
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+// Response Interceptor: Menangani error global & 401 Unauthorized
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && !error.config.url.includes('/autentikasi/login')) {
+      localStorage.removeItem('arff-session');
+      window.dispatchEvent(new Event('arff-unauthorized'));
+    }
+    return Promise.reject(error);
+  },
+);
+
+export function getErrorMessage(error) {
+  return error.response?.data?.message || error.message || 'Terjadi kesalahan pada sistem.';
+}
+
+export default axiosInstance;
