@@ -33,17 +33,9 @@ async function submitLaporan(req, res, next) {
     const finalKeterangan = (keterangan || catatan || '').trim();
     const finalPenggantian = (penggantian || '').trim();
 
-    let parsedChecklist = [];
+    let parsedChecklist = Array.isArray(checklist) ? checklist : Array.isArray(items) ? items : [];
     if (typeof checklist === 'string') {
-      try {
-        parsedChecklist = JSON.parse(checklist);
-      } catch (e) {
-        parsedChecklist = [];
-      }
-    } else if (Array.isArray(checklist)) {
-      parsedChecklist = checklist;
-    } else if (Array.isArray(items)) {
-      parsedChecklist = items;
+      try { parsedChecklist = JSON.parse(checklist); } catch (e) {}
     }
 
     // Jika ada upload file fisik

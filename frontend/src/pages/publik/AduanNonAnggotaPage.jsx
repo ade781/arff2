@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, Loader2, Search } from 'lucide-react';
 import { itemService } from '../../api/itemService';
 import { laporanNonAnggotaService } from '../../api/laporanNonAnggotaService';
@@ -6,6 +7,7 @@ import { getErrorMessage } from '../../api/axiosInstance';
 import ItemSummary from '../../components/equipment/ItemSummary';
 
 export default function AduanNonAnggotaPage({ onBackToLogin }) {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [kontak, setKontak] = useState('');
   const [kodeQr, setKodeQr] = useState('');
@@ -77,7 +79,10 @@ export default function AduanNonAnggotaPage({ onBackToLogin }) {
           <button
             className="text-xs text-gray-600 hover:text-gray-900 border border-gray-300 rounded px-2.5 py-1 cursor-pointer"
             type="button"
-            onClick={onBackToLogin}
+            onClick={() => {
+              if (onBackToLogin) onBackToLogin();
+              else navigate('/login');
+            }}
           >
             Kembali ke Login
           </button>

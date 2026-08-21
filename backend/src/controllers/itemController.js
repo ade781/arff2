@@ -125,10 +125,6 @@ async function getItemByQr(req, res, next) {
   try {
     const rawQr = decodeURIComponent(req.params.kodeQr || '').trim();
 
-    if (!rawQr) {
-      return errorResponse(res, 400, 'Kode QR wajib dikirim');
-    }
-
     // Mendukung scan format 'ARFF-YIA:APAR-A-001' atau langsung 'APAR-A-001'
     const kodeItem = rawQr.startsWith('ARFF-YIA:')
       ? rawQr.replace('ARFF-YIA:', '').trim()

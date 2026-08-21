@@ -1,29 +1,89 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+
+// Pages
 import LoginPage from './pages/auth/LoginPage';
 import AduanNonAnggotaPage from './pages/publik/AduanNonAnggotaPage';
 import PetugasPemeriksaanPage from './pages/petugas/PetugasPemeriksaanPage';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+
+// Admin Layout & Subpages
+import AdminLayout from './components/layout/AdminLayout';
+import AdminRingkasanPage from './pages/admin/AdminRingkasanPage';
+import AdminEquipmentPage from './pages/admin/AdminEquipmentPage';
+import AdminTemplateQrPage from './pages/admin/AdminTemplateQrPage';
+import AdminMonitoringPage from './pages/admin/AdminMonitoringPage';
+
+function AdminRoute({ children }) {
+  const { session } = useAuth();
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+  if (session.user?.role !== 'admin') {
+    return <Navigate to="/petugas" replace />;
+  }
+  return children;
+}
+
+function PetugasRoute({ children }) {
+  const { session } = useAuth();
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+function RootRedirect() {
+  const { session } = useAuth();
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+  if (session.user?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+  return <Navigate to="/petugas" replace />;
+}
 
 export default function App() {
-  const { session } = useAuth();
-  const [publicReportMode, setPublicReportMode] = useState(false);
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Root Redirect */}
+        <Route path="/" element={<RootRedirect />} />
 
-  if (publicReportMode) {
-    return <AduanNonAnggotaPage onBackToLogin={() => setPublicReportMode(false)} />;
-  }
+        {/* Auth & Publik */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/aduan" element={<AduanNonAnggotaPage />} />
 
-  if (!session) {
-    return (
-      <LoginPage
-        onOpenPublicReport={() => setPublicReportMode(true)}
-      />
-    );
-  }
+        {/* Petugas Lapangan */}
+        <Route
+          path="/petugas"
+          element={
+            <PetugasRoute>
+              <PetugasPemeriksaanPage />
+            </PetugasRoute>
+          }
+        />
 
-  if (session.user?.role === 'admin') {
-    return <AdminDashboardPage />;
-  }
+        {/* Admin Modular Subpages */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminRingkasanPage />} />
+          <Route path="ringkasan" element={<Navigate to="/admin" replace />} />
+          <Route path="items" element={<AdminEquipmentPage />} />
+          <Route path="template-qr" element={<AdminTemplateQrPage />} />
+          <Route path="monitoring" element={<AdminMonitoringPage />} />
+        </Route>
 
-  return <PetugasPemeriksaanPage />;
+        {/* Catch-all fallback */}
+        <Route path="*" element={<RootRedirect />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }

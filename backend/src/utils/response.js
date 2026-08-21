@@ -1,8 +1,4 @@
-/**
- * Standard API Response Helpers
- *
- * Semua controller menggunakan urutan parameter: (res, statusCode, message, data)
- */
+
 
 function successResponse(res, statusCode = 200, message = 'Berhasil', data = null) {
   return res.status(statusCode).json({

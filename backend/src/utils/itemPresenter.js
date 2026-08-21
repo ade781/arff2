@@ -1,7 +1,3 @@
-/**
- * Presenter helper untuk format output Item/Equipment ke API response.
- * Menyediakan alias field agar kompatibel dengan frontend.
- */
 
 function buildQrPayload(kodeItem) {
   return `ARFF-YIA:${kodeItem}`;

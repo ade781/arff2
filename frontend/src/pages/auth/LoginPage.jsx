@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { autentikasiService } from '../../api/autentikasiService';
 import { getErrorMessage } from '../../api/axiosInstance';
@@ -6,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function LoginPage({ onOpenPublicReport }) {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,6 +21,11 @@ export default function LoginPage({ onOpenPublicReport }) {
     try {
       const data = await autentikasiService.login(username, password);
       login(data);
+      if (data.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/petugas');
+      }
     } catch (loginError) {
       setError(getErrorMessage(loginError));
     } finally {
@@ -26,9 +33,17 @@ export default function LoginPage({ onOpenPublicReport }) {
     }
   }
 
+  function handleOpenPublicReport() {
+    if (onOpenPublicReport) {
+      onOpenPublicReport();
+    } else {
+      navigate('/aduan');
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white rounded border border-gray-200 p-6">
+      <div className="w-full max-w-sm bg-white rounded border border-gray-200 p-6 shadow-sm">
         <div className="mb-6 text-center">
           <h1 className="text-lg font-bold text-gray-900">ARFF YIA</h1>
           <p className="text-xs text-gray-500">Sistem Pemeriksaan Fasilitas</p>
@@ -81,7 +96,7 @@ export default function LoginPage({ onOpenPublicReport }) {
           <button
             className="text-xs text-gray-600 hover:text-gray-900 underline cursor-pointer"
             type="button"
-            onClick={onOpenPublicReport}
+            onClick={handleOpenPublicReport}
           >
             Form Aduan Kerusakan (Non-Anggota)
           </button>

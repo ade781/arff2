@@ -45,14 +45,14 @@ export default function ItemTable({ items, onEdit, onDelete, onQr, loading, onAd
       </div>
 
       <div className="grid gap-2 sm:grid-cols-12">
-        <div className="relative sm:col-span-6">
+        <div className="relative sm:col-span-6 flex items-center">
+          <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
           <input
-            className="field text-xs pl-7"
+            className="field field-with-icon text-xs h-8"
             placeholder="Cari kode, nama, lokasi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Search className="absolute left-2 top-2.5 text-gray-400" size={13} />
         </div>
         <div className="sm:col-span-3">
           <select className="field text-xs cursor-pointer" value={filterZona} onChange={(e) => setFilterZona(e.target.value)}>

@@ -1,9 +1,8 @@
 import React from 'react';
-import { Boxes, History, LayoutDashboard, LogOut } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { Boxes, History, LayoutDashboard, LogOut, QrCode } from 'lucide-react';
 
 export default function AdminSidebar({
-  activeTab,
-  onSelectTab,
   session,
   onLogout,
   mobileOpen,
@@ -13,13 +12,14 @@ export default function AdminSidebar({
   aduanCount,
 }) {
   const menuItems = [
-    { id: 'dashboard', label: 'Ringkasan', icon: LayoutDashboard, badge: null },
-    { id: 'items', label: 'Master Equipment', icon: Boxes, badge: itemsCount },
-    { id: 'monitoring', label: 'Monitoring & Aduan', icon: History, badge: (laporanCount + aduanCount) || null },
+    { to: '/admin', end: true, label: 'Ringkasan', icon: LayoutDashboard, badge: null },
+    { to: '/admin/items', label: 'Master Equipment', icon: Boxes, badge: itemsCount },
+    { to: '/admin/template-qr', label: 'Template QR (A4)', icon: QrCode, badge: null },
+    { to: '/admin/monitoring', label: 'Monitoring & Aduan', icon: History, badge: (laporanCount + aduanCount) || null },
   ];
 
   const sidebarContent = (
-    <div className="flex h-full flex-col justify-between p-4 bg-white border-r border-gray-200">
+    <div className="flex h-full flex-col justify-between p-4 bg-white border-r border-gray-200 no-print">
       <div>
         <div className="pb-3 border-b border-gray-200">
           <h1 className="text-sm font-bold text-gray-900">ARFF YIA</h1>
@@ -29,20 +29,21 @@ export default function AdminSidebar({
         <nav className="mt-4 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id;
             return (
-              <button
-                key={item.id}
-                type="button"
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
                 onClick={() => {
-                  onSelectTab(item.id);
                   if (onCloseMobile) onCloseMobile();
                 }}
-                className={`flex w-full items-center justify-between rounded px-3 py-2 text-xs font-medium cursor-pointer ${
-                  isActive
-                    ? 'bg-gray-100 text-gray-900 font-semibold'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                className={({ isActive }) =>
+                  `flex w-full items-center justify-between rounded px-3 py-2 text-xs font-medium transition ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-100'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`
+                }
               >
                 <div className="flex items-center gap-2">
                   <Icon size={15} />
@@ -53,7 +54,7 @@ export default function AdminSidebar({
                     {item.badge}
                   </span>
                 ) : null}
-              </button>
+              </NavLink>
             );
           })}
         </nav>
@@ -79,12 +80,12 @@ export default function AdminSidebar({
 
   return (
     <>
-      <aside className="hidden lg:block w-56 shrink-0 h-screen sticky top-0">
+      <aside className="hidden lg:block w-56 shrink-0 h-screen sticky top-0 no-print">
         {sidebarContent}
       </aside>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
+        <div className="fixed inset-0 z-50 flex lg:hidden no-print">
           <div className="fixed inset-0 bg-black/30" onClick={onCloseMobile} />
           <div className="relative w-64 max-w-[80vw] h-full z-10">
             {sidebarContent}

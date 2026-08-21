@@ -24,7 +24,7 @@ export default function BatchQrModal({ items, onClose }) {
           const dataUrl = await QRCode.toDataURL(payload, { width: 160, margin: 1 });
           generated.push({ item, dataUrl, payload });
         } catch (e) {
-          // ignore
+          console.error(`Gagal memuat QR untuk ${item.kodeItem}:`, e);
         }
       }
 
