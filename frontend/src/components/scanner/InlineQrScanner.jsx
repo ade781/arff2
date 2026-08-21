@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, CameraOff, RefreshCw, Search } from 'lucide-react';
+import { Camera, CameraOff, Image as ImageIcon, Loader2, RefreshCw, Search } from 'lucide-react';
 
 export default function InlineQrScanner({ onDetected, disabled }) {
   const [scannerActive, setScannerActive] = useState(true);
   const [manualCode, setManualCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isScanning, setIsScanning] = useState(false);
+  const [loadingFileScan, setLoadingFileScan] = useState(false);
+  const fileInputRef = useRef(null);
   const html5QrCodeRef = useRef(null);
   const scannerContainerId = 'inline-qr-reader';
 
@@ -17,6 +19,16 @@ export default function InlineQrScanner({ onDetected, disabled }) {
     async function startCamera() {
       if (!scannerActive || disabled) return;
       setErrorMsg('');
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (mounted) {
+          setErrorMsg(
+            'Browser memblokir kamera karena koneksi HTTP (bukan HTTPS). Gunakan URL https:// atau tombol Ambil Foto QR di bawah.'
+          );
+          setIsScanning(false);
+        }
+        return;
+      }
 
       try {
         const element = document.getElementById(scannerContainerId);
@@ -52,7 +64,10 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         if (mounted) setIsScanning(true);
       } catch (err) {
         if (mounted) {
-          setErrorMsg('Kamera tidak aktif atau izin ditolak.');
+          console.warn('Camera start error:', err);
+          setErrorMsg(
+            'Kamera tidak dapat diakses atau izin belum diberikan. Pastikan izin kamera aktif.'
+          );
           setIsScanning(false);
         }
       }
@@ -60,7 +75,7 @@ export default function InlineQrScanner({ onDetected, disabled }) {
 
     const timer = setTimeout(() => {
       startCamera();
-    }, 100);
+    }, 150);
 
     return () => {
       mounted = false;
@@ -86,8 +101,31 @@ export default function InlineQrScanner({ onDetected, disabled }) {
     }
   }
 
+  // Fallback: Scan dari file gambar atau foto kamera langsung
+  async function handleFileScan(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setLoadingFileScan(true);
+    setErrorMsg('');
+
+    try {
+      let scanner = html5QrCodeRef.current;
+      if (!scanner) {
+        scanner = new Html5Qrcode(scannerContainerId);
+      }
+      const decodedText = await scanner.scanFile(file, true);
+      onDetected(decodedText);
+    } catch (err) {
+      setErrorMsg('QR code tidak terbaca dari foto. Coba foto lebih dekat atau ketik manual.');
+    } finally {
+      setLoadingFileScan(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }
+
   return (
-    <div className="card p-3 space-y-3 bg-white border border-gray-200">
+    <div className="card p-3 space-y-3 bg-white border border-gray-200 shadow-xs">
       {/* Header Pemindai */}
       <div className="flex items-center justify-between pb-2 border-b border-gray-100">
         <div>
@@ -98,7 +136,7 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         <button
           type="button"
           onClick={() => setScannerActive((prev) => !prev)}
-          className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1 cursor-pointer border border-gray-300 px-2 py-1 rounded bg-gray-50 hover:bg-gray-100"
+          className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1 cursor-pointer border border-gray-300 px-2 py-1 rounded bg-gray-50 hover:bg-gray-100 transition"
         >
           {scannerActive ? <Camera size={13} /> : <CameraOff size={13} />}
           <span>{scannerActive ? 'Matikan' : 'Nyalakan'}</span>
@@ -106,34 +144,56 @@ export default function InlineQrScanner({ onDetected, disabled }) {
       </div>
 
       {/* Area Kamera Viewfinder */}
-      <div className="relative bg-gray-100 rounded border border-gray-300 flex items-center justify-center min-h-[240px] max-h-[300px] overflow-hidden">
+      <div className="relative bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center min-h-[250px] max-h-[300px] overflow-hidden">
         <div id={scannerContainerId} className="w-full h-full object-cover" />
-
-        {/* Bingkai Viewfinder Sederhana */}
-        {scannerActive && isScanning && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-            <div className="w-48 h-48 border-2 border-dashed border-white/80 rounded-lg shadow-sm" />
-          </div>
-        )}
 
         {/* Fallback Jika Kamera Mati / Error */}
         {(!scannerActive || errorMsg) && (
-          <div className="absolute inset-0 bg-gray-50 flex flex-col items-center justify-center p-4 text-center space-y-2">
+          <div className="absolute inset-0 bg-gray-50/95 flex flex-col items-center justify-center p-4 text-center space-y-2 z-10">
             <CameraOff size={28} className="text-gray-400" />
-            <p className="text-xs text-gray-600">{errorMsg || 'Kamera sedang dinonaktifkan.'}</p>
-            <button
-              type="button"
-              onClick={() => {
-                setErrorMsg('');
-                setScannerActive(true);
-              }}
-              className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium cursor-pointer"
-            >
-              <RefreshCw size={12} /> Buka Kamera
-            </button>
+            <p className="text-xs text-gray-700 max-w-[260px] leading-relaxed">
+              {errorMsg || 'Kamera sedang dinonaktifkan.'}
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setErrorMsg('');
+                  setScannerActive(true);
+                }}
+                className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium cursor-pointer shadow-xs"
+              >
+                <RefreshCw size={12} /> Coba Buka Kamera
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loadingFileScan}
+                className="inline-flex items-center gap-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded text-xs font-medium cursor-pointer"
+              >
+                {loadingFileScan ? (
+                  <Loader2 className="animate-spin" size={12} />
+                ) : (
+                  <ImageIcon size={12} />
+                )}
+                <span>Ambil Foto QR</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Hidden File Input untuk Ambil Foto / Upload QR */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileScan}
+        className="hidden"
+      />
 
       {/* Input Manual Sederhana */}
       <form onSubmit={handleManualSubmit} className="flex items-center gap-2 pt-1">

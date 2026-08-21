@@ -79,14 +79,28 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
             <div className="flex items-center justify-between">
               <span className="font-bold text-sm text-gray-900">{target.namaItem || target.nama}</span>
               <div className="flex items-center gap-1">
-                <TypeBadge type={target.jenis || target.tipe} />
                 <ZoneBadge zone={target.zona} />
+                <TypeBadge type={target.jenis || target.tipe} />
               </div>
             </div>
+            {target.gedung && (
+              <p className="text-gray-700">
+                <span className="font-medium text-gray-900">Gedung / Lantai:</span> {target.gedung}{' '}
+                {target.lantai ? `(${target.lantai})` : ''}
+              </p>
+            )}
             <p className="text-gray-600">
               <span className="font-medium text-gray-700">Lokasi:</span> {target.lokasi}{' '}
               {target.detailLokasi ? `(${target.detailLokasi})` : ''}
             </p>
+            {target.tipeMedia || target.ukuran || target.tipeHydrant ? (
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-700">Spesifikasi:</span>{' '}
+                {target.tipeMedia ? `${target.tipeMedia} ` : ''}
+                {target.ukuran ? `${target.ukuran} ` : ''}
+                {target.tipeHydrant ? `[${target.tipeHydrant}]` : ''}
+              </p>
+            ) : null}
           </div>
 
           {/* Pemilih Kondisi Equipment (3 Tombol Pilihan Utama) */}

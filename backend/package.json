@@ -8,6 +8,7 @@
     "db:sync": "node src/scripts/sinkronDatabase.js",
     "db:sync:force": "node src/scripts/sinkronDatabase.js --force",
     "db:seed": "node src/scripts/isiDataAwal.js",
+    "db:import-excel": "node src/scripts/imporExcelZona.js",
     "test": "node -e \"const fs=require('fs');const path=require('path');function walk(d){for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory())walk(p);else if(p.endsWith('.js'))require('child_process').execFileSync(process.execPath,['--check',p],{stdio:'inherit'});}}walk('src');\""
   },
   "keywords": [],
@@ -25,7 +26,8 @@
     "multer": "^2.2.0",
     "mysql2": "^3.23.4",
     "qrcode": "^1.5.4",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

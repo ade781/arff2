@@ -20,7 +20,10 @@ app.use(
 // CORS Config
 app.use(
   cors({
-    origin: process.env.APP_ORIGIN || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Izinkan request dari localhost, IP lokal WiFi (192.168.x.x), ngrok, dsb.
+      callback(null, true);
+    },
     credentials: true,
   }),
 );

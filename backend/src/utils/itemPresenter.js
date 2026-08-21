@@ -1,4 +1,3 @@
-
 function buildQrPayload(kodeItem) {
   return `ARFF-YIA:${kodeItem}`;
 }
@@ -18,8 +17,15 @@ function presentItem(item) {
     jenis: plain.jenis,
     tipe: plain.jenis,
     zona: plain.zona,
+    gedung: plain.gedung || null,
+    lantai: plain.lantai || null,
     lokasi: plain.lokasi,
     detailLokasi: plain.detailLokasi,
+    tipeMedia: plain.tipeMedia || null,
+    ukuran: plain.ukuran || null,
+    tipeHydrant: plain.tipeHydrant || null,
+    merk: plain.merk || null,
+    jumlah: plain.jumlah || 1,
     exp: plain.exp,
     status: plain.status,
     createdAt: plain.createdAt,

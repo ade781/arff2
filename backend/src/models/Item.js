@@ -16,19 +16,27 @@ const Item = sequelize.define(
       field: 'kode_item',
     },
     namaItem: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(150),
       allowNull: false,
       field: 'nama_item',
     },
     jenis: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: 'apar',
+      defaultValue: 'apar', // 'apar' | 'hydrant'
     },
     zona: {
       type: DataTypes.STRING(10),
       allowNull: false,
-      defaultValue: 'A',
+      defaultValue: '1',
+    },
+    gedung: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    lantai: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
     lokasi: {
       type: DataTypes.TEXT,
@@ -38,6 +46,29 @@ const Item = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
       field: 'detail_lokasi',
+    },
+    tipeMedia: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      field: 'tipe_media', // e.g. 'DCP', 'CO2', 'FOAM', 'CLEAN AGENT'
+    },
+    ukuran: {
+      type: DataTypes.STRING(30),
+      allowNull: true, // e.g. '6.0 Kg', '5.0 Kg', '23.0 Kg'
+    },
+    tipeHydrant: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      field: 'tipe_hydrant', // e.g. 'IHB', 'OHB', 'SIAMESE', 'PILLAR'
+    },
+    merk: {
+      type: DataTypes.STRING(50),
+      allowNull: true, // e.g. 'Zhield', 'Chemguard', 'Yamato'
+    },
+    jumlah: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
     },
     exp: {
       type: DataTypes.DATEONLY,
@@ -52,13 +83,14 @@ const Item = sequelize.define(
   {
     tableName: 'items',
     timestamps: true,
-    paranoid: true, // Soft delete: data tidak langsung hilang saat dihapus
+    paranoid: true,
     underscored: true,
     indexes: [
       { fields: ['kode_item'], unique: true },
       { fields: ['zona'] },
-      { fields: ['status'] },
+      { fields: ['gedung'] },
       { fields: ['jenis'] },
+      { fields: ['status'] },
       { fields: ['exp'] },
     ],
   },

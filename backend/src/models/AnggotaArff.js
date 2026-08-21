@@ -27,6 +27,10 @@ const AnggotaArff = sequelize.define(
       allowNull: false,
       defaultValue: 'ARFF YIA',
     },
+    regu: {
+      type: DataTypes.STRING(50),
+      allowNull: true, // e.g. 'Regu Alfa', 'Regu Bravo', 'Regu Charlie', 'Regu Delta'
+    },
     role: {
       type: DataTypes.STRING(20),
       allowNull: false,

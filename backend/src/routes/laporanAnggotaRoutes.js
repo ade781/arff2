@@ -3,12 +3,16 @@ const {
   submitLaporan,
   getAllLaporan,
   exportCsv,
+  exportExcelZona,
   getLaporanById,
 } = require('../controllers/laporanAnggotaController');
 const { authenticate, authorizeRoles } = require('../middlewares/authMiddleware');
 const { uploadFoto } = require('../middlewares/uploadMiddleware');
 
 const router = express.Router();
+
+// Export file Excel High Fidelity resmi ARFF per Zona
+router.get('/export-excel-zona', authenticate, exportExcelZona);
 
 // Export data rekapitulasi ke CSV (Excel compatible)
 router.get('/export/csv', authenticate, exportCsv);

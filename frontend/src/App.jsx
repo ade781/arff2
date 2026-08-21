@@ -16,6 +16,7 @@ import AdminLayout from './components/layout/AdminLayout';
 import AdminRingkasanPage from './pages/admin/AdminRingkasanPage';
 import AdminEquipmentPage from './pages/admin/AdminEquipmentPage';
 import AdminTemplateQrPage from './pages/admin/AdminTemplateQrPage';
+import AdminRekapLaporanPage from './pages/admin/AdminRekapLaporanPage';
 import AdminMonitoringPage from './pages/admin/AdminMonitoringPage';
 
 function AdminRoute({ children }) {
@@ -85,6 +86,7 @@ export default function App() {
           <Route path="ringkasan" element={<Navigate to="/admin" replace />} />
           <Route path="items" element={<AdminEquipmentPage />} />
           <Route path="template-qr" element={<AdminTemplateQrPage />} />
+          <Route path="rekap-laporan" element={<AdminRekapLaporanPage />} />
           <Route path="monitoring" element={<AdminMonitoringPage />} />
         </Route>
 

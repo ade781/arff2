@@ -1,6 +1,10 @@
+const xlsx = require('xlsx');
 const { Op } = require('sequelize');
 const { LaporanAnggota, Item, AnggotaArff } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
+const { presentLaporanAnggota } = require('../utils/laporanPresenter');
+const { exportLaporanToCsv } = require('../utils/csvExporter');
+const { exportHighFidelityZonaExcel } = require('../utils/excelExporter');
 
 async function submitLaporan(req, res, next) {
   try {
@@ -100,53 +104,48 @@ async function getAllLaporan(req, res, next) {
       where.createdAt = { [Op.lte]: new Date(`${tanggalSelesai}T23:59:59.999Z`) };
     }
 
+    const isUnlimited = limit === 'all' || Number(limit) === 0;
+    const queryLimit = isUnlimited ? 2000 : Math.min(Number(limit) || 50, 1000);
+    const queryOffset = isUnlimited ? 0 : Math.max(Number(offset) || 0, 0);
+
     const { count, rows } = await LaporanAnggota.findAndCountAll({
       where,
       include: [
         {
           model: AnggotaArff,
           as: 'petugas',
-          attributes: ['id', 'nama', 'username', 'unit', 'role'],
+          attributes: ['id', 'nama', 'username', 'unit', 'regu', 'role'],
         },
         {
           model: Item,
           as: 'item',
-          paranoid: false, // Sertakan equipment meskipun sudah di-soft-delete
-          attributes: ['id', 'kodeItem', 'namaItem', 'jenis', 'zona', 'lokasi', 'detailLokasi', 'exp', 'status'],
+          paranoid: false,
+          attributes: [
+            'id',
+            'kodeItem',
+            'namaItem',
+            'jenis',
+            'zona',
+            'gedung',
+            'lantai',
+            'lokasi',
+            'detailLokasi',
+            'tipeMedia',
+            'ukuran',
+            'tipeHydrant',
+            'merk',
+            'jumlah',
+            'exp',
+            'status',
+          ],
         },
       ],
       order: [['createdAt', 'DESC']],
-      limit: Math.min(Number(limit) || 50, 100),
-      offset: Math.max(Number(offset) || 0, 0),
+      limit: queryLimit,
+      offset: queryOffset,
     });
 
-    const mapped = rows.map((r) => ({
-      id: r.id,
-      idAnggota: r.idAnggota,
-      idItem: r.idItem,
-      status: r.status,
-      hasilUmum: r.status,
-      keterangan: r.keterangan,
-      catatan: r.keterangan,
-      penggantian: r.penggantian,
-      foto: r.foto,
-      items: r.checklist || [],
-      checklist: r.checklist || [],
-      waktuPemeriksaan: r.createdAt,
-      createdAt: r.createdAt,
-      petugas: r.petugas,
-      equipment: r.item ? {
-        id: r.item.id,
-        kodeEquipment: r.item.kodeItem,
-        nama: r.item.namaItem,
-        tipe: r.item.jenis,
-        zona: r.item.zona,
-        lokasi: r.item.lokasi,
-        exp: r.item.exp,
-        status: r.item.status,
-      } : null,
-      item: r.item,
-    }));
+    const mapped = rows.map(presentLaporanAnggota);
 
     return successResponse(res, 200, 'Data laporan anggota berhasil dimuat', {
       total: count,
@@ -182,33 +181,9 @@ async function exportCsv(req, res, next) {
       order: [['createdAt', 'DESC']],
     });
 
-    // Buat header CSV dengan BOM agar dibaca rapi oleh Microsoft Excel
-    let csv = '\uFEFFNo,Waktu Pemeriksaan,Kode Equipment,Nama Equipment,Jenis,Zona,Lokasi,Expired,Status,Petugas,Catatan Temuan,Tindakan Penggantian,Foto\n';
-
-    rows.forEach((r, idx) => {
-      const escape = (str) => `"${(str || '').toString().replace(/"/g, '""')}"`;
-      const waktu = new Date(r.createdAt).toLocaleString('id-ID');
-      const item = r.item || {};
-      const petugas = r.petugas || {};
-
-      csv += [
-        idx + 1,
-        escape(waktu),
-        escape(item.kodeItem || '-'),
-        escape(item.namaItem || '-'),
-        escape(item.jenis?.toUpperCase() || '-'),
-        escape(item.zona || '-'),
-        escape(item.lokasi || '-'),
-        escape(item.exp || '-'),
-        escape(r.status?.toUpperCase()),
-        escape(`${petugas.nama || 'Petugas'} (${petugas.unit || 'ARFF'})`),
-        escape(r.keterangan || '-'),
-        escape(r.penggantian || '-'),
-        escape(r.foto || '-'),
-      ].join(',') + '\n';
-    });
-
+    const csv = exportLaporanToCsv(rows);
     const filename = `Rekap_Inspeksi_ARFF_${new Date().toISOString().split('T')[0]}.csv`;
+
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     return res.status(200).send(csv);
@@ -230,7 +205,65 @@ async function getLaporanById(req, res, next) {
       return errorResponse(res, 404, 'Laporan pemeriksaan tidak ditemukan');
     }
 
-    return successResponse(res, 200, 'Detail laporan pemeriksaan anggota', { laporan });
+    return successResponse(res, 200, 'Detail laporan pemeriksaan anggota', {
+      laporan: presentLaporanAnggota(laporan),
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function exportExcelZona(req, res, next) {
+  try {
+    const {
+      zona = '1',
+      bulanTahun = 'AGUSTUS 2026',
+      bulanLalu = 'JULI 2026',
+      regu = 'REGU DELTA',
+      petugasName,
+    } = req.query;
+
+    // Ambil laporan pemeriksaan untuk zona tersebut
+    const laporanList = await LaporanAnggota.findAll({
+      include: [
+        {
+          model: Item,
+          as: 'item',
+          where: { zona: String(zona) },
+          paranoid: false,
+        },
+        {
+          model: AnggotaArff,
+          as: 'petugas',
+          attributes: ['id', 'nama', 'username', 'unit', 'regu'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const laporanMap = {};
+    laporanList.forEach((lap) => {
+      if (lap.item?.kodeItem && !laporanMap[lap.item.kodeItem]) {
+        laporanMap[lap.item.kodeItem] = lap;
+      }
+    });
+
+    const wb = exportHighFidelityZonaExcel({
+      zona,
+      bulanTahun,
+      bulanLalu,
+      regu,
+      laporanMap,
+      petugasName: petugasName || req.user?.nama || 'Petugas ARFF',
+    });
+
+    const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const cleanBulan = bulanTahun.replace(/\s+/g, '_');
+    const filename = `REKAP_INSPEKSI_ARFF_ZONA_${zona}_${cleanBulan}.xlsx`;
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return res.status(200).send(buffer);
   } catch (error) {
     return next(error);
   }
@@ -240,5 +273,6 @@ module.exports = {
   submitLaporan,
   getAllLaporan,
   exportCsv,
+  exportExcelZona,
   getLaporanById,
 };

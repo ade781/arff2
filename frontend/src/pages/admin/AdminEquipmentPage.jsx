@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { Printer } from 'lucide-react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import ItemForm from '../../components/equipment/ItemForm';
 import ItemTable from '../../components/equipment/ItemTable';
 import QrModal from '../../components/equipment/QrModal';
-import BatchQrModal from '../../components/equipment/BatchQrModal';
 import { EMPTY_ITEM_FORM } from '../../constants/itemConstants';
 import { itemService } from '../../api/itemService';
 import { getErrorMessage } from '../../api/axiosInstance';
 
 export default function AdminEquipmentPage() {
   const { items, loadingItems, loadItems, setNotice } = useOutletContext();
+  const navigate = useNavigate();
   const [itemForm, setItemForm] = useState(EMPTY_ITEM_FORM);
   const [editingItem, setEditingItem] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [qrData, setQrData] = useState(null);
-  const [showBatchQr, setShowBatchQr] = useState(false);
   const [loadingForm, setLoadingForm] = useState(false);
 
   function startEdit(item) {
@@ -23,15 +22,30 @@ export default function AdminEquipmentPage() {
       kodeItem: item.kodeItem || item.kodeEquipment || '',
       namaItem: item.namaItem || item.nama || '',
       jenis: item.jenis || item.tipe || 'apar',
-      zona: item.zona || 'A',
+      zona: String(item.zona || '1'),
+      gedung: item.gedung || '',
+      lantai: item.lantai || 'Lantai 1',
       lokasi: item.lokasi || '',
       detailLokasi: item.detailLokasi || '',
+      tipeMedia: item.tipeMedia || 'DCP',
+      ukuran: item.ukuran || '6.0 Kg',
+      tipeHydrant: item.tipeHydrant || 'IHB',
+      merk: item.merk || '',
+      jumlah: item.jumlah || 1,
       exp: item.exp || '',
       status: item.status || 'aktif',
     });
+    setIsFormOpen(true);
   }
 
-  function resetForm() {
+  function startAdd() {
+    setEditingItem(null);
+    setItemForm(EMPTY_ITEM_FORM);
+    setIsFormOpen(true);
+  }
+
+  function closeForm() {
+    setIsFormOpen(false);
     setEditingItem(null);
     setItemForm(EMPTY_ITEM_FORM);
   }
@@ -44,12 +58,12 @@ export default function AdminEquipmentPage() {
     try {
       if (editingItem) {
         await itemService.updateItem(editingItem.id, itemForm);
-        setNotice({ type: 'success', message: 'Equipment berhasil diperbarui' });
+        setNotice({ type: 'success', message: `Equipment ${itemForm.kodeItem} berhasil diperbarui` });
       } else {
         await itemService.createItem(itemForm);
-        setNotice({ type: 'success', message: 'Equipment baru berhasil ditambahkan' });
+        setNotice({ type: 'success', message: `Equipment baru ${itemForm.kodeItem} berhasil ditambahkan` });
       }
-      resetForm();
+      closeForm();
       await loadItems();
     } catch (err) {
       setNotice({ type: 'error', message: getErrorMessage(err) });
@@ -82,41 +96,35 @@ export default function AdminEquipmentPage() {
 
   return (
     <div className="space-y-4">
+      {/* Modal Single QR */}
       <QrModal qrData={qrData} onClose={() => setQrData(null)} />
 
-      {showBatchQr ? (
-        <BatchQrModal items={items} onClose={() => setShowBatchQr(false)} />
-      ) : null}
+      {/* Modal Form Tambah / Edit Equipment */}
+      {isFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <ItemForm
+              form={itemForm}
+              onChange={setItemForm}
+              onSubmit={saveItem}
+              onCancel={closeForm}
+              loading={loadingForm}
+              editing={Boolean(editingItem)}
+            />
+          </div>
+        </div>
+      )}
 
-      <div className="flex justify-end no-print">
-        <button
-          className="h-8 inline-flex items-center gap-1.5 rounded border border-gray-300 bg-white px-2.5 text-xs text-gray-700 hover:bg-gray-50 cursor-pointer shadow-sm"
-          type="button"
-          onClick={() => setShowBatchQr(true)}
-        >
-          <Printer size={13} />
-          <span>Cetak Lembar QR</span>
-        </button>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
-        <ItemForm
-          form={itemForm}
-          onChange={setItemForm}
-          onSubmit={saveItem}
-          onCancel={resetForm}
-          loading={loadingForm}
-          editing={Boolean(editingItem)}
-        />
-        <ItemTable
-          items={items}
-          onEdit={startEdit}
-          onDelete={deleteItem}
-          onQr={openQr}
-          loading={loadingItems}
-          onAddNew={() => resetForm()}
-        />
-      </div>
+      {/* Tabel Master Equipment Full Width */}
+      <ItemTable
+        items={items}
+        onEdit={startEdit}
+        onDelete={deleteItem}
+        onQr={openQr}
+        loading={loadingItems}
+        onAddNew={startAdd}
+        onBatchQr={() => navigate('/admin/template-qr')}
+      />
     </div>
   );
 }

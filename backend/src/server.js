@@ -16,7 +16,7 @@ async function checkDatabaseConnection() {
   }
 }
 
-const server = app.listen(port, () => {
+const server = app.listen(port, '0.0.0.0', () => {
   console.log(`ARFF YIA API berjalan di http://localhost:${port}`);
   checkDatabaseConnection();
 });

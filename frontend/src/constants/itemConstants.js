@@ -1,10 +1,3 @@
-/**
- * Status dan Konstanta yang digunakan bersama frontend & backend.
- *
- * STATUS_LAPORAN: Status hasil pemeriksaan lapangan
- * STATUS_ITEM: Status master equipment
- */
-
 export const STATUS_LAPORAN = [
   { value: 'baik', label: 'Baik' },
   { value: 'perlu_perhatian', label: 'Perlu Perhatian' },
@@ -22,15 +15,32 @@ export const EMPTY_ITEM_FORM = {
   kodeItem: '',
   namaItem: '',
   jenis: 'apar',
-  zona: 'A',
+  zona: '1',
+  gedung: '',
+  lantai: 'Lantai 1',
   lokasi: '',
   detailLokasi: '',
+  tipeMedia: 'DCP',
+  ukuran: '6.0 Kg',
+  tipeHydrant: 'IHB',
+  merk: '',
+  jumlah: 1,
   exp: '',
   status: 'aktif',
 };
 
-export const ZONES = ['A', 'B', 'C', 'D'];
+export const ZONES = ['1', '2', '3', '4'];
+
 export const ITEM_TYPES = [
   { value: 'apar', label: 'APAR' },
   { value: 'hydrant', label: 'Hydrant' },
+];
+
+export const MEDIA_TYPES = ['DCP', 'CO2', 'FOAM', 'CLEAN AGENT'];
+
+export const HYDRANT_TYPES = [
+  { value: 'IHB', label: 'Indoor Hydrant Box (IHB)' },
+  { value: 'OHB', label: 'Outdoor Hydrant Box (OHB)' },
+  { value: 'SIAMESE', label: 'Siamese Connection' },
+  { value: 'PILLAR', label: 'Hydrant Pillar' },
 ];

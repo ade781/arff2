@@ -25,4 +25,6 @@ npm-debug.log*
 
 # Documentation / local files
 docs/
-
+scratch_*.xlsx
+*.xlsx
+!docs/*.xlsx

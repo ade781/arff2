@@ -14,8 +14,15 @@ async function createItem(req, res, next) {
       jenis,
       tipe,
       zona,
+      gedung,
+      lantai,
       lokasi,
       detailLokasi,
+      tipeMedia,
+      ukuran,
+      tipeHydrant,
+      merk,
+      jumlah,
       exp,
       status,
     } = req.body;
@@ -23,7 +30,7 @@ async function createItem(req, res, next) {
     const finalKodeItem = (kodeItem || '').trim();
     const finalNamaItem = (namaItem || nama || '').trim();
     const finalJenis = (jenis || tipe || 'apar').toLowerCase().trim();
-    const finalZona = (zona || 'A').toUpperCase().trim();
+    const finalZona = (zona || '1').toUpperCase().trim();
     const finalLokasi = (lokasi || '').trim();
     const finalStatus = (status || 'aktif').toLowerCase().trim();
 
@@ -33,10 +40,6 @@ async function createItem(req, res, next) {
 
     if (!['apar', 'hydrant'].includes(finalJenis)) {
       return errorResponse(res, 400, 'Jenis item hanya boleh apar atau hydrant');
-    }
-
-    if (!['A', 'B', 'C', 'D'].includes(finalZona)) {
-      return errorResponse(res, 400, 'Zona hanya boleh A, B, C, atau D');
     }
 
     const existing = await Item.findOne({ where: { kodeItem: finalKodeItem } });
@@ -49,8 +52,15 @@ async function createItem(req, res, next) {
       namaItem: finalNamaItem,
       jenis: finalJenis,
       zona: finalZona,
+      gedung: (gedung || '').trim() || null,
+      lantai: (lantai || '').trim() || null,
       lokasi: finalLokasi,
       detailLokasi: detailLokasi || null,
+      tipeMedia: (tipeMedia || '').trim() || null,
+      ukuran: (ukuran || '').trim() || null,
+      tipeHydrant: (tipeHydrant || '').trim() || null,
+      merk: (merk || '').trim() || null,
+      jumlah: Number(jumlah) || 1,
       exp: exp || null,
       status: finalStatus,
     });
@@ -65,11 +75,13 @@ async function createItem(req, res, next) {
 
 async function getAllItems(req, res, next) {
   try {
-    const { zona, jenis, tipe, status, search } = req.query;
+    const { zona, jenis, tipe, gedung, lantai, status, search } = req.query;
     const where = {};
 
     if (zona) where.zona = String(zona).toUpperCase();
     if (jenis || tipe) where.jenis = String(jenis || tipe).toLowerCase();
+    if (gedung) where.gedung = String(gedung);
+    if (lantai) where.lantai = String(lantai);
     if (status) where.status = String(status).toLowerCase();
 
     if (search) {
@@ -77,12 +89,17 @@ async function getAllItems(req, res, next) {
         { kodeItem: { [Op.like]: `%${search}%` } },
         { namaItem: { [Op.like]: `%${search}%` } },
         { lokasi: { [Op.like]: `%${search}%` } },
+        { gedung: { [Op.like]: `%${search}%` } },
       ];
     }
 
     const items = await Item.findAll({
       where,
-      order: [['updatedAt', 'DESC']],
+      order: [
+        ['zona', 'ASC'],
+        ['gedung', 'ASC'],
+        ['kodeItem', 'ASC'],
+      ],
     });
 
     const mapped = items.map(presentItem);
@@ -125,7 +142,6 @@ async function getItemByQr(req, res, next) {
   try {
     const rawQr = decodeURIComponent(req.params.kodeQr || '').trim();
 
-    // Mendukung scan format 'ARFF-YIA:APAR-A-001' atau langsung 'APAR-A-001'
     const kodeItem = rawQr.startsWith('ARFF-YIA:')
       ? rawQr.replace('ARFF-YIA:', '').trim()
       : rawQr;
@@ -187,8 +203,15 @@ async function updateItem(req, res, next) {
       jenis,
       tipe,
       zona,
+      gedung,
+      lantai,
       lokasi,
       detailLokasi,
+      tipeMedia,
+      ukuran,
+      tipeHydrant,
+      merk,
+      jumlah,
       exp,
       status,
     } = req.body;
@@ -212,8 +235,15 @@ async function updateItem(req, res, next) {
       namaItem: finalNamaItem,
       jenis: finalJenis,
       zona: finalZona,
+      gedung: gedung !== undefined ? gedung : item.gedung,
+      lantai: lantai !== undefined ? lantai : item.lantai,
       lokasi: finalLokasi,
       detailLokasi: detailLokasi !== undefined ? detailLokasi : item.detailLokasi,
+      tipeMedia: tipeMedia !== undefined ? tipeMedia : item.tipeMedia,
+      ukuran: ukuran !== undefined ? ukuran : item.ukuran,
+      tipeHydrant: tipeHydrant !== undefined ? tipeHydrant : item.tipeHydrant,
+      merk: merk !== undefined ? merk : item.merk,
+      jumlah: jumlah !== undefined ? Number(jumlah) : item.jumlah,
       exp: exp !== undefined ? exp : item.exp,
       status: finalStatus,
     });

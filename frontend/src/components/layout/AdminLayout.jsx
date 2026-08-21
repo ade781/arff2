@@ -69,6 +69,7 @@ export default function AdminLayout() {
     const path = location.pathname;
     if (path.includes('/admin/items')) return 'Master Data Equipment';
     if (path.includes('/admin/template-qr')) return 'Template Stiker QR (A4)';
+    if (path.includes('/admin/rekap-laporan')) return 'Rekap Laporan Zona (Format ARFF)';
     if (path.includes('/admin/monitoring')) return 'Monitoring & Aduan';
     return 'Ringkasan Sistem';
   }, [location.pathname]);

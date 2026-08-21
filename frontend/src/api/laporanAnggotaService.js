@@ -36,6 +36,14 @@ export const laporanAnggotaService = {
     return res.data;
   },
 
+  async exportExcelZona(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await axiosInstance.get(`/laporan-anggota/export-excel-zona?${query}`, {
+      responseType: 'blob',
+    });
+    return res.data;
+  },
+
   async getLaporanById(id) {
     const res = await axiosInstance.get(`/laporan-anggota/${id}`);
     return res.data.data.laporan;
