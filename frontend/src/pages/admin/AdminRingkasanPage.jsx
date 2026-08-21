@@ -156,7 +156,7 @@ export default function AdminRingkasanPage() {
           <span className="text-[11px] text-slate-400">Aksi Operasional Admin ARFF</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
           <button
             type="button"
             onClick={() => navigate('/admin/items')}
@@ -166,7 +166,7 @@ export default function AdminRingkasanPage() {
               <Plus size={16} />
             </div>
             <p className="text-xs font-bold text-slate-900">Kelola Equipment</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Tambah / Edit Master APAR & Hydrant</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Tambah / Edit APAR & Hydrant</p>
           </button>
 
           <button
@@ -178,7 +178,7 @@ export default function AdminRingkasanPage() {
               <QrCode size={16} />
             </div>
             <p className="text-xs font-bold text-slate-900">Cetak Stiker QR</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Template Cetak Format Lembar A4</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Template Cetak Lembar A4</p>
           </button>
 
           <button
@@ -189,8 +189,8 @@ export default function AdminRingkasanPage() {
             <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2 group-hover:scale-105 transition">
               <FileSpreadsheet size={16} />
             </div>
-            <p className="text-xs font-bold text-slate-900">Rekap Laporan Zona</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Format Standar Resmi & Export Excel</p>
+            <p className="text-xs font-bold text-slate-900">Rekap Laporan</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Format Standar & Excel</p>
           </button>
 
           <button
@@ -202,7 +202,19 @@ export default function AdminRingkasanPage() {
               <History size={16} />
             </div>
             <p className="text-xs font-bold text-slate-900">Log Monitoring</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Riwayat Inspeksi & Aduan Masuk</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Riwayat Inspeksi & Aduan</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/admin/pengguna')}
+            className="p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50/50 hover:bg-blue-50/40 text-left transition cursor-pointer group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mb-2 group-hover:scale-105 transition">
+              <Users size={16} />
+            </div>
+            <p className="text-xs font-bold text-slate-900">Kelola Pengguna</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Akun Admin & Petugas</p>
           </button>
         </div>
       </section>
