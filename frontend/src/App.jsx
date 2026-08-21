@@ -2,12 +2,16 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
-// Pages
+// Auth & Publik
 import LoginPage from './pages/auth/LoginPage';
 import AduanNonAnggotaPage from './pages/publik/AduanNonAnggotaPage';
-import PetugasPemeriksaanPage from './pages/petugas/PetugasPemeriksaanPage';
 
-// Admin Layout & Subpages
+// Petugas Layout & Modular Subpages
+import PetugasLayout from './components/layout/PetugasLayout';
+import PetugasScanPage from './pages/petugas/PetugasScanPage';
+import PetugasRiwayatPage from './pages/petugas/PetugasRiwayatPage';
+
+// Admin Layout & Modular Subpages
 import AdminLayout from './components/layout/AdminLayout';
 import AdminRingkasanPage from './pages/admin/AdminRingkasanPage';
 import AdminEquipmentPage from './pages/admin/AdminEquipmentPage';
@@ -55,15 +59,18 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/aduan" element={<AduanNonAnggotaPage />} />
 
-        {/* Petugas Lapangan */}
+        {/* Petugas Lapangan Modular Routes */}
         <Route
           path="/petugas"
           element={
             <PetugasRoute>
-              <PetugasPemeriksaanPage />
+              <PetugasLayout />
             </PetugasRoute>
           }
-        />
+        >
+          <Route index element={<PetugasScanPage />} />
+          <Route path="riwayat" element={<PetugasRiwayatPage />} />
+        </Route>
 
         {/* Admin Modular Subpages */}
         <Route
