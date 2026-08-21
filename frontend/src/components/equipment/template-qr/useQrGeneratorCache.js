@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 
 /**
- * Hook untuk men-generate dan meng-cache QR Code Data URL secara asinkron
+ * Hook untuk men-generate dan meng-cache QR Code Data URL beresolusi tinggi secara asinkron
  */
 export function useQrGeneratorCache(items = []) {
   const [qrCache, setQrCache] = useState({});
@@ -21,7 +21,7 @@ export function useQrGeneratorCache(items = []) {
           try {
             const payload = `ARFF-YIA:${item.kodeItem}`;
             const dataUrl = await QRCode.toDataURL(payload, {
-              width: 240,
+              width: 360,
               margin: 1,
               errorCorrectionLevel: 'M',
             });

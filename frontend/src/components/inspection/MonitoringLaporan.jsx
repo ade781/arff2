@@ -195,19 +195,30 @@ export default function MonitoringLaporan({ laporanAnggota, laporanNonAnggota, f
                   </p>
                 ) : null}
 
-                {isExpanded && lap.checklist && lap.checklist.length > 0 ? (
-                  <div className="mt-2 pt-2 border-t border-gray-100 space-y-1">
-                    <p className="text-[11px] font-medium text-gray-600">Rincian Checklist:</p>
-                    <div className="grid gap-1 sm:grid-cols-2">
-                      {lap.checklist.map((item, idx) => (
-                        <div key={idx} className="flex items-center justify-between bg-gray-50 p-1.5 rounded text-[11px]">
-                          <span>{item.namaItem}</span>
-                          <span className="font-medium">{item.status}</span>
+                {(() => {
+                  const checklistArr = Array.isArray(lap.checklist)
+                    ? lap.checklist
+                    : typeof lap.checklist === 'string'
+                    ? (() => { try { return JSON.parse(lap.checklist); } catch (e) { return []; } })()
+                    : [];
+
+                  if (isExpanded && checklistArr.length > 0) {
+                    return (
+                      <div className="mt-2 pt-2 border-t border-gray-100 space-y-1">
+                        <p className="text-[11px] font-medium text-gray-600">Rincian Checklist:</p>
+                        <div className="grid gap-1 sm:grid-cols-2">
+                          {checklistArr.map((item, idx) => (
+                            <div key={idx} className="flex items-center justify-between bg-gray-50 p-1.5 rounded text-[11px]">
+                              <span>{item.namaItem || item.nama}</span>
+                              <span className="font-medium">{item.status || 'Baik'}</span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             );
           }) : (

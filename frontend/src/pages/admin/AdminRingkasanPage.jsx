@@ -11,6 +11,7 @@ import {
   Plus,
   QrCode,
   ShieldAlert,
+  Users,
 } from 'lucide-react';
 import ItemTable from '../../components/equipment/ItemTable';
 import QrModal from '../../components/equipment/QrModal';

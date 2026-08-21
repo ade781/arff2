@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Boxes, FileSpreadsheet, History, LayoutDashboard, LogOut, QrCode } from 'lucide-react';
+import { Boxes, FileSpreadsheet, History, LayoutDashboard, LogOut, QrCode, Users } from 'lucide-react';
 
 export default function AdminSidebar({
   session,
@@ -17,6 +17,7 @@ export default function AdminSidebar({
     { to: '/admin/template-qr', label: 'Template QR (A4)', icon: QrCode, badge: null },
     { to: '/admin/rekap-laporan', label: 'Rekap Laporan Zona', icon: FileSpreadsheet, badge: null },
     { to: '/admin/monitoring', label: 'Monitoring & Aduan', icon: History, badge: (laporanCount + aduanCount) || null },
+    { to: '/admin/pengguna', label: 'Kelola Pengguna', icon: Users, badge: null },
   ];
 
   const sidebarContent = (

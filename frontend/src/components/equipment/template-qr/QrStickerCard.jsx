@@ -5,8 +5,8 @@ export default function QrStickerCard({ item, qrUrl, loading }) {
   if (!item) {
     return (
       <div
-        className="border border-dashed border-gray-200 rounded p-2 flex items-center justify-center text-[10px] text-gray-300 select-none"
-        style={{ minHeight: '52mm' }}
+        className="border border-dashed border-gray-200 rounded-lg p-2 flex items-center justify-center text-[10px] text-gray-300 select-none"
+        style={{ minHeight: '56mm' }}
       >
         Slot Kosong
       </div>
@@ -15,35 +15,38 @@ export default function QrStickerCard({ item, qrUrl, loading }) {
 
   return (
     <div
-      className="border border-dashed border-gray-300 rounded p-1.5 flex flex-col items-center justify-between text-center bg-white hover:border-blue-400 transition"
-      style={{ minHeight: '52mm' }}
+      className="border border-dashed border-gray-300 rounded-lg p-2 flex flex-col items-center justify-between text-center bg-white hover:border-blue-500 hover:shadow-xs transition"
+      style={{ minHeight: '56mm' }}
     >
-      <div className="w-full flex items-center justify-between border-b border-gray-100 pb-0.5 text-[9px]">
-        <span className="font-extrabold text-red-600">ARFF YIA</span>
-        <span className="font-semibold text-gray-600 text-[8px]">
+      {/* Header Stiker */}
+      <div className="w-full flex items-center justify-between border-b border-gray-100 pb-1 text-[10px]">
+        <span className="font-extrabold text-red-600 tracking-wider">ARFF YIA</span>
+        <span className="font-bold text-gray-700 bg-gray-100 px-1.5 py-0.2 rounded text-[9px]">
           Zona {item.zona}
         </span>
       </div>
 
-      <div className="my-auto py-0.5 flex items-center justify-center">
+      {/* QR Code Utama - Diperbesar Optimal Mengisi Ruang */}
+      <div className="my-auto py-1 flex items-center justify-center w-full">
         {qrUrl ? (
           <img
             src={qrUrl}
             alt={`QR ${item.kodeItem}`}
-            className="h-20 w-20 object-contain"
+            className="h-28 w-28 sm:h-32 sm:w-32 object-contain aspect-square drop-shadow-2xs"
           />
         ) : (
-          <div className="h-20 w-20 border border-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-            {loading ? <Loader2 className="animate-spin" size={14} /> : 'QR'}
+          <div className="h-28 w-28 sm:h-32 sm:w-32 border border-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">
+            {loading ? <Loader2 className="animate-spin text-blue-500" size={18} /> : 'Memuat QR...'}
           </div>
         )}
       </div>
 
-      <div className="w-full border-t border-gray-100 pt-0.5 leading-tight">
-        <p className="font-mono text-[10px] font-bold text-gray-900">
+      {/* Footer Info Equipment */}
+      <div className="w-full border-t border-gray-100 pt-1 leading-tight">
+        <p className="font-mono text-xs font-black text-gray-900 tracking-wide">
           {item.kodeItem}
         </p>
-        <p className="text-[8px] text-gray-600 truncate max-w-[120px] mx-auto">
+        <p className="text-[9px] text-gray-600 font-medium truncate max-w-[140px] mx-auto mt-0.5" title={item.namaItem}>
           {item.gedung ? `${item.gedung}` : item.namaItem}
         </p>
       </div>

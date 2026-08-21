@@ -18,6 +18,7 @@ import AdminEquipmentPage from './pages/admin/AdminEquipmentPage';
 import AdminTemplateQrPage from './pages/admin/AdminTemplateQrPage';
 import AdminRekapLaporanPage from './pages/admin/AdminRekapLaporanPage';
 import AdminMonitoringPage from './pages/admin/AdminMonitoringPage';
+import AdminPenggunaPage from './pages/admin/AdminPenggunaPage';
 
 function AdminRoute({ children }) {
   const { session } = useAuth();
@@ -88,6 +89,7 @@ export default function App() {
           <Route path="template-qr" element={<AdminTemplateQrPage />} />
           <Route path="rekap-laporan" element={<AdminRekapLaporanPage />} />
           <Route path="monitoring" element={<AdminMonitoringPage />} />
+          <Route path="pengguna" element={<AdminPenggunaPage />} />
         </Route>
 
         {/* Catch-all fallback */}

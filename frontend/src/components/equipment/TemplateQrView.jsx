@@ -11,10 +11,10 @@ export default function TemplateQrView({ items = [] }) {
   // 1. Selection State
   const [selectedIds, setSelectedIds] = useState(() => items.slice(0, 48).map((it) => it.id));
 
-  // 2. Filter State untuk Selector Kanan
+  // 2. Filter State untuk Selector Kanan (Cascading: Zona -> Gedung -> Jenis -> Search)
   const [filterZona, setFilterZona] = useState('');
-  const [filterJenis, setFilterJenis] = useState('');
   const [filterGedung, setFilterGedung] = useState('');
+  const [filterJenis, setFilterJenis] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   // 3. Pagination & Print State
@@ -25,14 +25,22 @@ export default function TemplateQrView({ items = [] }) {
   const [bottomPage, setBottomPage] = useState(1);
   const [bottomPageSize, setBottomPageSize] = useState(25);
 
-  // Daftar gedung unik untuk filter dropdown
-  const uniqueGedungList = useMemo(() => {
+  // Cascading: Gedung hanya diambil dari Zona yang dipilih
+  const availableGedungList = useMemo(() => {
+    if (!filterZona) return [];
     const set = new Set();
-    items.forEach((item) => {
-      if (item.gedung) set.add(item.gedung);
-    });
+    items
+      .filter((item) => String(item.zona) === String(filterZona))
+      .forEach((item) => {
+        if (item.gedung) set.add(item.gedung);
+      });
     return Array.from(set).sort();
-  }, [items]);
+  }, [items, filterZona]);
+
+  function handleZonaChange(val) {
+    setFilterZona(val);
+    setFilterGedung(''); // Reset gedung otomatis saat zona berganti
+  }
 
   // Sync initial selection
   useEffect(() => {
@@ -52,17 +60,17 @@ export default function TemplateQrView({ items = [] }) {
   const filteredSelectorItems = useMemo(() => {
     return items.filter((item) => {
       const matchZona = !filterZona || String(item.zona) === String(filterZona);
-      const matchJenis = !filterJenis || item.jenis === filterJenis;
       const matchGedung = !filterGedung || item.gedung === filterGedung;
+      const matchJenis = !filterJenis || item.jenis === filterJenis;
       const matchSearch =
         !searchTerm ||
         item.kodeItem?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.namaItem?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.lokasi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.gedung?.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchZona && matchJenis && matchGedung && matchSearch;
+      return matchZona && matchGedung && matchJenis && matchSearch;
     });
-  }, [items, filterZona, filterJenis, filterGedung, searchTerm]);
+  }, [items, filterZona, filterGedung, filterJenis, searchTerm]);
 
   // Equipment yang sudah DIPILIH (masuk ke template preview A4)
   const selectedItems = useMemo(() => {
@@ -135,12 +143,12 @@ export default function TemplateQrView({ items = [] }) {
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             filterZona={filterZona}
-            setFilterZona={setFilterZona}
+            onZonaChange={handleZonaChange}
             filterGedung={filterGedung}
             setFilterGedung={setFilterGedung}
             filterJenis={filterJenis}
             setFilterJenis={setFilterJenis}
-            uniqueGedungList={uniqueGedungList}
+            availableGedungList={availableGedungList}
           />
         </div>
       </div>

@@ -16,7 +16,7 @@ import ZoneBadge from '../common/ZoneBadge';
 import { ZONES, ITEM_TYPES } from '../../constants/itemConstants';
 
 export default function ItemTable({
-  items,
+  items = [],
   onEdit,
   onDelete,
   onQr,
@@ -26,22 +26,35 @@ export default function ItemTable({
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterZona, setFilterZona] = useState('');
-  const [filterJenis, setFilterJenis] = useState('');
   const [filterGedung, setFilterGedung] = useState('');
+  const [filterJenis, setFilterJenis] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // Daftar gedung unik untuk filter dropdown
-  const uniqueGedungList = useMemo(() => {
+  // Cascading: Daftar gedung hanya diambil dari Zona yang sedang dipilih
+  const availableGedungList = useMemo(() => {
+    if (!filterZona) return [];
     const set = new Set();
-    items.forEach((item) => {
-      if (item.gedung) set.add(item.gedung);
-    });
+    items
+      .filter((item) => String(item.zona) === String(filterZona))
+      .forEach((item) => {
+        if (item.gedung) set.add(item.gedung);
+      });
     return Array.from(set).sort();
-  }, [items]);
+  }, [items, filterZona]);
+
+  // Handler saat Zona berubah: Reset filter Gedung secara otomatis
+  function handleZonaChange(val) {
+    setFilterZona(val);
+    setFilterGedung('');
+    setCurrentPage(1);
+  }
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      const matchZona = !filterZona || String(item.zona) === String(filterZona);
+      const matchGedung = !filterGedung || item.gedung === filterGedung;
+      const matchJenis = !filterJenis || item.jenis === filterJenis;
       const matchSearch =
         !searchTerm ||
         item.namaItem?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,12 +62,10 @@ export default function ItemTable({
         item.lokasi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.gedung?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.tipeMedia?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchZona = !filterZona || String(item.zona) === String(filterZona);
-      const matchJenis = !filterJenis || item.jenis === filterJenis;
-      const matchGedung = !filterGedung || item.gedung === filterGedung;
-      return matchSearch && matchZona && matchJenis && matchGedung;
+
+      return matchZona && matchGedung && matchJenis && matchSearch;
     });
-  }, [items, searchTerm, filterZona, filterJenis, filterGedung]);
+  }, [items, filterZona, filterGedung, filterJenis, searchTerm]);
 
   // Pagination calculation
   const totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
@@ -62,11 +73,6 @@ export default function ItemTable({
     const start = (currentPage - 1) * pageSize;
     return filteredItems.slice(start, start + pageSize);
   }, [filteredItems, currentPage, pageSize]);
-
-  function handleFilterChange(setter, val) {
-    setter(val);
-    setCurrentPage(1);
-  }
 
   return (
     <section className="card p-5 space-y-4 bg-white border border-gray-200 shadow-xs">
@@ -108,62 +114,121 @@ export default function ItemTable({
         </div>
       </div>
 
-      {/* Filter Toolbar (Lega & Presisi) */}
-      <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-12 text-xs">
-        <div className="relative sm:col-span-5 flex items-center">
-          <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-          <input
-            className="field field-with-icon text-xs h-9 w-full"
-            placeholder="Cari kode item, nama, gedung, lokasi..."
-            value={searchTerm}
-            onChange={(e) => handleFilterChange(setSearchTerm, e.target.value)}
-          />
+      {/* Filter Toolbar Hierarkis (Zona -> Gedung -> Jenis -> Search) */}
+      <div className="space-y-2 text-xs">
+        <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-12">
+          {/* 1. Pilih Zona Terlebih Dahulu (Seperti Provinsi) */}
+          <div className="sm:col-span-3">
+            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+              1. Pilih Zona <span className="text-blue-600">*</span>
+            </label>
+            <select
+              className="field text-xs h-9 cursor-pointer w-full font-semibold border-blue-300 focus:border-blue-500"
+              value={filterZona}
+              onChange={(e) => handleZonaChange(e.target.value)}
+            >
+              <option value="">-- Semua Zona --</option>
+              {ZONES.map((z) => (
+                <option key={z} value={z}>
+                  Zona {z}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 2. Pilih Gedung (Hanya aktif/tersaring sesuai Zona yang dipilih) */}
+          <div className="sm:col-span-3">
+            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+              2. Pilih Gedung / Area
+            </label>
+            <select
+              className={`field text-xs h-9 w-full ${
+                !filterZona
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                  : 'cursor-pointer bg-white'
+              }`}
+              value={filterGedung}
+              disabled={!filterZona}
+              onChange={(e) => {
+                setFilterGedung(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="">
+                {!filterZona ? '-- Pilih Zona Terlebih Dahulu --' : '-- Semua Gedung di Zona ' + filterZona + ' --'}
+              </option>
+              {availableGedungList.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 3. Pilih Jenis Equipment */}
+          <div className="sm:col-span-2">
+            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+              3. Jenis
+            </label>
+            <select
+              className="field text-xs h-9 cursor-pointer w-full"
+              value={filterJenis}
+              onChange={(e) => {
+                setFilterJenis(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="">Semua Jenis</option>
+              {ITEM_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 4. Search Input */}
+          <div className="sm:col-span-4">
+            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+              4. Cari Kode / Lokasi
+            </label>
+            <div className="relative flex items-center">
+              <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+              <input
+                className="field field-with-icon text-xs h-9 w-full"
+                placeholder="Cari kode, nama, lokasi..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="sm:col-span-3">
-          <select
-            className="field text-xs h-9 cursor-pointer w-full"
-            value={filterGedung}
-            onChange={(e) => handleFilterChange(setFilterGedung, e.target.value)}
-          >
-            <option value="">Semua Gedung / Area</option>
-            {uniqueGedungList.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="sm:col-span-2">
-          <select
-            className="field text-xs h-9 cursor-pointer w-full"
-            value={filterZona}
-            onChange={(e) => handleFilterChange(setFilterZona, e.target.value)}
-          >
-            <option value="">Semua Zona</option>
-            {ZONES.map((z) => (
-              <option key={z} value={z}>
-                Zona {z}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="sm:col-span-2">
-          <select
-            className="field text-xs h-9 cursor-pointer w-full"
-            value={filterJenis}
-            onChange={(e) => handleFilterChange(setFilterJenis, e.target.value)}
-          >
-            <option value="">Semua Jenis</option>
-            {ITEM_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Filter Indicator / Reset */}
+        {(filterZona || filterGedung || filterJenis || searchTerm) && (
+          <div className="flex items-center justify-between pt-1 text-[11px] text-gray-500">
+            <span>
+              Menampilkan <strong>{filteredItems.length}</strong> dari <strong>{items.length}</strong> equipment
+              {filterZona ? ` (Zona ${filterZona}${filterGedung ? ` - ${filterGedung}` : ''})` : ''}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setFilterZona('');
+                setFilterGedung('');
+                setFilterJenis('');
+                setSearchTerm('');
+                setCurrentPage(1);
+              }}
+              className="text-red-600 hover:text-red-800 font-medium cursor-pointer"
+            >
+              Reset Semua Filter
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tabel Data Full Width */}

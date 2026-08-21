@@ -71,6 +71,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/template-qr')) return 'Template Stiker QR (A4)';
     if (path.includes('/admin/rekap-laporan')) return 'Rekap Laporan Zona (Format ARFF)';
     if (path.includes('/admin/monitoring')) return 'Monitoring & Aduan';
+    if (path.includes('/admin/pengguna')) return 'Kelola Pengguna ARFF';
     return 'Ringkasan Sistem';
   }, [location.pathname]);
 

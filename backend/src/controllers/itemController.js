@@ -122,7 +122,7 @@ async function getItemById(req, res, next) {
     }
 
     const qrPayload = buildQrPayload(item.kodeItem);
-    const qrCodeDataUrl = await QRCode.toDataURL(qrPayload, { width: 320, margin: 2 });
+    const qrCodeDataUrl = await QRCode.toDataURL(qrPayload, { width: 360, margin: 1 });
     const checklist = CHECKLISTS[item.jenis] || [];
     const data = presentItem(item);
 
@@ -174,7 +174,7 @@ async function getItemQrCode(req, res, next) {
     }
 
     const qrPayload = buildQrPayload(item.kodeItem);
-    const qrCodeDataUrl = await QRCode.toDataURL(qrPayload, { width: 360, margin: 2 });
+    const qrCodeDataUrl = await QRCode.toDataURL(qrPayload, { width: 400, margin: 1 });
     const data = presentItem(item);
 
     return successResponse(res, 200, 'QR Code berhasil dibuat', {

@@ -11,3 +11,10 @@ export const MONTH_OPTIONS = [
   { value: 'JUNI 2026', label: 'Juni 2026' },
   { value: 'MEI 2026', label: 'Mei 2026' },
 ];
+
+export const REGU_OPTIONS = [
+  'Regu Alfa',
+  'Regu Bravo',
+  'Regu Charlie',
+  'Regu Delta',
+];

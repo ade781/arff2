@@ -23,10 +23,11 @@ export default function AdminRekapLaporanPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [exporting, setExporting] = useState(false);
 
-  // Sync regu default saat zona berganti
+  // Sync regu default dan reset filter gedung saat zona berganti
   useEffect(() => {
     const cfg = ZONA_CONFIG.find((z) => z.id === activeZona);
     if (cfg) setSelectedRegu(cfg.regu);
+    setFilterGedung('');
   }, [activeZona]);
 
   // Hook data & grouping
@@ -151,6 +152,8 @@ export default function AdminRekapLaporanPage() {
         setSearchTerm={setSearchTerm}
         selectedBulan={selectedBulan}
         setSelectedBulan={setSelectedBulan}
+        selectedRegu={selectedRegu}
+        setSelectedRegu={setSelectedRegu}
         filterGedung={filterGedung}
         setFilterGedung={setFilterGedung}
         filterKondisi={filterKondisi}
