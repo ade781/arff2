@@ -147,6 +147,7 @@ body {
 }
 
 /* QR Reader */
+#inline-qr-reader video,
 #qr-reader video {
   width: 100%;
   min-height: 240px;
@@ -154,6 +155,8 @@ body {
   border-radius: 0.5rem;
 }
 
+#inline-qr-reader__dashboard,
+#inline-qr-reader__scan_region img,
 #qr-reader__dashboard,
 #qr-reader__scan_region img {
   display: none !important;

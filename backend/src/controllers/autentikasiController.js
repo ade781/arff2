@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const { AnggotaArff } = require('../models');
 const { signToken } = require('../utils/token');
 const { successResponse, errorResponse } = require('../utils/response');
+const { presentPengguna } = require('../utils/penggunaPresenter');
 
 async function login(req, res, next) {
   try {
@@ -33,13 +34,7 @@ async function login(req, res, next) {
 
     return successResponse(res, 200, 'Login berhasil', {
       token,
-      user: {
-        id: user.id,
-        nama: user.nama,
-        username: user.username,
-        unit: user.unit,
-        role: user.role,
-      },
+      user: presentPengguna(user),
     });
   } catch (error) {
     return next(error);
@@ -48,13 +43,7 @@ async function login(req, res, next) {
 
 function getProfile(req, res) {
   return successResponse(res, 200, 'Profil anggota berhasil dimuat', {
-    user: {
-      id: req.user.id,
-      nama: req.user.nama,
-      username: req.user.username,
-      unit: req.user.unit,
-      role: req.user.role,
-    },
+    user: presentPengguna(req.user),
   });
 }
 

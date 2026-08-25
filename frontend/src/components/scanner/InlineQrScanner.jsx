@@ -80,12 +80,15 @@ export default function InlineQrScanner({ onDetected, disabled }) {
     return () => {
       mounted = false;
       clearTimeout(timer);
-      if (scannerInstance && scannerInstance.isScanning) {
-        scannerInstance
+      const instance = scannerInstance || html5QrCodeRef.current;
+      if (instance && instance.isScanning) {
+        instance
           .stop()
           .catch(() => {})
           .then(() => {
-            scannerInstance.clear();
+            try {
+              instance.clear();
+            } catch (e) {}
             setIsScanning(false);
           });
       }

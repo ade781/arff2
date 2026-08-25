@@ -1,8 +1,19 @@
 
+const { presentItem } = require('./itemPresenter');
+
 function presentLaporanAnggota(laporan) {
   if (!laporan) return null;
   const raw = laporan.toJSON ? laporan.toJSON() : laporan;
-  const it = raw.item || null;
+
+  let checklist = raw.checklist;
+  if (typeof checklist === 'string') {
+    try {
+      checklist = JSON.parse(checklist);
+    } catch (e) {
+      checklist = [];
+    }
+  }
+  if (!Array.isArray(checklist)) checklist = [];
 
   return {
     id: raw.id,
@@ -12,29 +23,10 @@ function presentLaporanAnggota(laporan) {
     keterangan: raw.keterangan || '',
     penggantian: raw.penggantian || '',
     foto: raw.foto || null,
-    checklist: raw.checklist || [],
+    checklist,
     createdAt: raw.createdAt,
     petugas: raw.petugas || null,
-    item: it
-      ? {
-          id: it.id,
-          kodeItem: it.kodeItem,
-          namaItem: it.namaItem,
-          jenis: it.jenis,
-          zona: it.zona,
-          gedung: it.gedung,
-          lantai: it.lantai,
-          lokasi: it.lokasi,
-          detailLokasi: it.detailLokasi,
-          tipeMedia: it.tipeMedia,
-          ukuran: it.ukuran,
-          tipeHydrant: it.tipeHydrant,
-          merk: it.merk,
-          jumlah: it.jumlah,
-          exp: it.exp,
-          status: it.status,
-        }
-      : null,
+    item: raw.item ? presentItem(raw.item) : null,
   };
 }
 

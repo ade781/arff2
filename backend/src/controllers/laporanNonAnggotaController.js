@@ -91,6 +91,10 @@ async function getAllLaporan(req, res, next) {
       where.createdAt = { [Op.lte]: new Date(`${tanggalSelesai}T23:59:59.999Z`) };
     }
 
+    const isUnlimited = limit === 'all' || Number(limit) === 0;
+    const queryLimit = isUnlimited ? 2000 : Math.min(Number(limit) || 50, 1000);
+    const queryOffset = isUnlimited ? 0 : Math.max(Number(offset) || 0, 0);
+
     const { count, rows } = await LaporanNonAnggota.findAndCountAll({
       where,
       include: [
@@ -107,8 +111,8 @@ async function getAllLaporan(req, res, next) {
         },
       ],
       order: [['createdAt', 'DESC']],
-      limit: Math.min(Number(limit) || 50, 100),
-      offset: Math.max(Number(offset) || 0, 0),
+      limit: queryLimit,
+      offset: queryOffset,
     });
 
     return successResponse(res, 200, 'Data laporan aduan non-anggota berhasil dimuat', {

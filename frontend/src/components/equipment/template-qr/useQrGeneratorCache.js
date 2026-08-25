@@ -9,29 +9,28 @@ export function useQrGeneratorCache(items = []) {
     let mounted = true;
 
     async function generateQrs() {
-      setGenerating(true);
-      const newCache = { ...qrCache };
-      let updated = false;
+      const missingItems = items.filter((it) => it?.kodeItem && !qrCache[it.kodeItem]);
+      if (missingItems.length === 0) return;
 
-      for (const item of items) {
-        if (!newCache[item.kodeItem]) {
-          try {
-            const payload = `ARFF-YIA:${item.kodeItem}`;
-            const dataUrl = await QRCode.toDataURL(payload, {
-              width: 360,
-              margin: 1,
-              errorCorrectionLevel: 'M',
-            });
-            newCache[item.kodeItem] = dataUrl;
-            updated = true;
-          } catch (err) {
-            console.error(`Gagal membuat QR untuk ${item.kodeItem}:`, err);
-          }
+      setGenerating(true);
+      const generated = {};
+
+      for (const item of missingItems) {
+        if (!mounted) break;
+        try {
+          const payload = `ARFF-YIA:${item.kodeItem}`;
+          generated[item.kodeItem] = await QRCode.toDataURL(payload, {
+            width: 360,
+            margin: 1,
+            errorCorrectionLevel: 'M',
+          });
+        } catch (err) {
+          console.error(`Gagal membuat QR untuk ${item.kodeItem}:`, err);
         }
       }
 
       if (mounted) {
-        if (updated) setQrCache(newCache);
+        setQrCache((prev) => ({ ...prev, ...generated }));
         setGenerating(false);
       }
     }
@@ -39,6 +38,10 @@ export function useQrGeneratorCache(items = []) {
     if (items.length > 0) {
       generateQrs();
     }
+
+    return () => {
+      mounted = false;
+    };
   }, [items]);
 
   return { qrCache, generating };

@@ -16,16 +16,15 @@ app.use(
   }),
 );
 
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,https://localhost:5173').split(',').map(s => s.trim());
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,https://localhost:5173').split(',').map((s) => s.trim());
 
 app.use(
   cors({
     origin: (origin, callback) => {
-
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
         callback(null, true);
       } else {
-        callback(null, true); 
+        callback(new Error('Akses CORS ditolak'));
       }
     },
     credentials: true,
