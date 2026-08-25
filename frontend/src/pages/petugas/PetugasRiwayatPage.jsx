@@ -9,9 +9,7 @@ import {
   Search,
 } from 'lucide-react';
 import ImagePreviewModal from '../../components/common/ImagePreviewModal';
-import StatusBadge from '../../components/common/StatusBadge';
-import TypeBadge from '../../components/common/TypeBadge';
-import ZoneBadge from '../../components/common/ZoneBadge';
+import { StatusBadge, TypeBadge, ZoneBadge } from '../../components/common/Badges';
 
 export default function PetugasRiwayatPage() {
   const { history, loadHistory, loadingHistory } = useOutletContext();

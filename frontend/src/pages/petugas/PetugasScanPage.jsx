@@ -6,9 +6,7 @@ import { laporanAnggotaService } from '../../api/laporanAnggotaService';
 import { getErrorMessage } from '../../api/axiosInstance';
 import InlineQrScanner from '../../components/scanner/InlineQrScanner';
 import QuickInspectionModal from '../../components/inspection/QuickInspectionModal';
-import StatusBadge from '../../components/common/StatusBadge';
-import TypeBadge from '../../components/common/TypeBadge';
-import ZoneBadge from '../../components/common/ZoneBadge';
+import { StatusBadge, TypeBadge, ZoneBadge } from '../../components/common/Badges';
 
 export default function PetugasScanPage() {
   const { history, loadHistory, setNotice } = useOutletContext();

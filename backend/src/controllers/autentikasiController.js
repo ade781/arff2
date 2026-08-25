@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const { AnggotaArff } = require('../models');
 const { signToken } = require('../utils/token');
 const { successResponse, errorResponse } = require('../utils/response');
-const { presentPengguna } = require('../utils/penggunaPresenter');
+const { presentPengguna } = require('../utils/presenters');
 
 async function login(req, res, next) {
   try {

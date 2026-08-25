@@ -3,8 +3,7 @@ const { Op } = require('sequelize');
 const { Item } = require('../models');
 const { CHECKLISTS } = require('../constants/checklists');
 const { successResponse, errorResponse } = require('../utils/response');
-const { buildQrPayload, presentItem } = require('../utils/itemPresenter');
-const { cleanQrCode } = require('../utils/qrHelper');
+const { buildQrPayload, presentItem, cleanQrCode } = require('../utils/presenters');
 
 async function createItem(req, res, next) {
   try {

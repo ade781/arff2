@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { LaporanNonAnggota, NonAnggota, Item } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
-const { cleanQrCode } = require('../utils/qrHelper');
+const { cleanQrCode } = require('../utils/presenters');
 
 async function submitLaporan(req, res, next) {
   try {

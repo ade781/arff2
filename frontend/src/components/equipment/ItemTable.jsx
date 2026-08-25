@@ -10,9 +10,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react';
-import StatusBadge from '../common/StatusBadge';
-import TypeBadge from '../common/TypeBadge';
-import ZoneBadge from '../common/ZoneBadge';
+import { StatusBadge, TypeBadge, ZoneBadge } from '../common/Badges';
 import { ZONES, ITEM_TYPES } from '../../constants/itemConstants';
 
 export default function ItemTable({

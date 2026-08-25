@@ -1,8 +1,5 @@
 import React from 'react';
-import StatusBadge from '../common/StatusBadge';
-import TypeBadge from '../common/TypeBadge';
-import ZoneBadge from '../common/ZoneBadge';
-import ExpBadge from '../common/ExpBadge';
+import { StatusBadge, TypeBadge, ZoneBadge, ExpBadge } from '../common/Badges';
 
 export default function ItemSummary({ item }) {
   if (!item) {

@@ -2,10 +2,9 @@ const xlsx = require('xlsx');
 const { Op } = require('sequelize');
 const { LaporanAnggota, Item, AnggotaArff } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
-const { presentLaporanAnggota } = require('../utils/laporanPresenter');
+const { presentLaporanAnggota, cleanQrCode } = require('../utils/presenters');
 const { exportLaporanToCsv } = require('../utils/csvExporter');
 const { exportHighFidelityZonaExcel } = require('../utils/excelExporter');
-const { cleanQrCode } = require('../utils/qrHelper');
 
 const BULAN_NAMES = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
 

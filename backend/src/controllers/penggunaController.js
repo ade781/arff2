@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { AnggotaArff } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
-const { presentPengguna } = require('../utils/penggunaPresenter');
+const { presentPengguna } = require('../utils/presenters');
 
 async function getAllPengguna(req, res, next) {
   try {

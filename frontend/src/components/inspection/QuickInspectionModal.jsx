@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle2, AlertTriangle, XCircle, X, Loader2, Send } from 'lucide-react';
-import TypeBadge from '../common/TypeBadge';
-import ZoneBadge from '../common/ZoneBadge';
+import { TypeBadge, ZoneBadge } from '../common/Badges';
 import ImageUploader from '../common/ImageUploader';
 
 export default function QuickInspectionModal({ item, onSubmit, onClose, loading }) {
