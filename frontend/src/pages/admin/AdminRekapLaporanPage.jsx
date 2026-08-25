@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Download, Layers, Loader2, Printer } from 'lucide-react';
-import { ZONA_CONFIG } from './rekap-laporan/rekapConstants';
+import {
+  ZONA_CONFIG,
+  RekapZonaTabs,
+  RekapStatsCards,
+  RekapFilterToolbar,
+  RekapSymbolLegend,
+  RekapSignatureBlock,
+} from './rekap-laporan/rekapComponents';
 import { useRekapZonaData } from './rekap-laporan/useRekapZonaData';
-import RekapZonaTabs from './rekap-laporan/RekapZonaTabs';
-import RekapStatsCards from './rekap-laporan/RekapStatsCards';
-import RekapFilterToolbar from './rekap-laporan/RekapFilterToolbar';
 import RekapInspectionTable from './rekap-laporan/RekapInspectionTable';
-import RekapSymbolLegend from './rekap-laporan/RekapSymbolLegend';
-import RekapSignatureBlock from './rekap-laporan/RekapSignatureBlock';
 import { exportZonaInspectionToExcel } from '../../utils/excelExporter';
 import { laporanAnggotaService } from '../../api/laporanAnggotaService';
 
