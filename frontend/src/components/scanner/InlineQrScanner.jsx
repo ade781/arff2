@@ -1,16 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, CameraOff, Image as ImageIcon, Loader2, RefreshCw, Search } from 'lucide-react';
+import { Camera, CameraOff, RefreshCw } from 'lucide-react';
 
 export default function InlineQrScanner({ onDetected, disabled }) {
   const [scannerActive, setScannerActive] = useState(true);
-  const [manualCode, setManualCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isScanning, setIsScanning] = useState(false);
-  const [loadingFileScan, setLoadingFileScan] = useState(false);
-  const fileInputRef = useRef(null);
   const html5QrCodeRef = useRef(null);
   const scannerContainerId = 'inline-qr-reader';
+  const disabledRef = useRef(disabled);
+
+  useEffect(() => {
+    disabledRef.current = disabled;
+  }, [disabled]);
 
   useEffect(() => {
     let mounted = true;
@@ -23,7 +25,7 @@ export default function InlineQrScanner({ onDetected, disabled }) {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         if (mounted) {
           setErrorMsg(
-            'Browser memblokir kamera karena koneksi HTTP (bukan HTTPS). Gunakan URL https:// atau tombol Ambil Foto QR di bawah.'
+            'Browser memblokir kamera karena koneksi HTTP (bukan HTTPS). Gunakan URL https:// untuk mengizinkan akses kamera langsung.'
           );
           setIsScanning(false);
         }
@@ -54,7 +56,7 @@ export default function InlineQrScanner({ onDetected, disabled }) {
           { facingMode: 'environment' },
           config,
           (decodedText) => {
-            if (mounted) {
+            if (mounted && !disabledRef.current) {
               onDetected(decodedText);
             }
           },
@@ -66,7 +68,7 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         if (mounted) {
           console.warn('Camera start error:', err);
           setErrorMsg(
-            'Kamera tidak dapat diakses atau izin belum diberikan. Pastikan izin kamera aktif.'
+            'Kamera tidak dapat diakses atau izin belum diberikan. Pastikan izin kamera telah diizinkan pada browser.'
           );
           setIsScanning(false);
         }
@@ -95,44 +97,12 @@ export default function InlineQrScanner({ onDetected, disabled }) {
     };
   }, [scannerActive, disabled, onDetected]);
 
-  function handleManualSubmit(e) {
-    e.preventDefault();
-    const clean = manualCode.trim();
-    if (clean) {
-      onDetected(clean);
-      setManualCode('');
-    }
-  }
-
-  async function handleFileScan(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setLoadingFileScan(true);
-    setErrorMsg('');
-
-    try {
-      let scanner = html5QrCodeRef.current;
-      if (!scanner) {
-        scanner = new Html5Qrcode(scannerContainerId);
-      }
-      const decodedText = await scanner.scanFile(file, true);
-      onDetected(decodedText);
-    } catch (err) {
-      setErrorMsg('QR code tidak terbaca dari foto. Coba foto lebih dekat atau ketik manual.');
-    } finally {
-      setLoadingFileScan(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  }
-
   return (
     <div className="card p-3 space-y-3 bg-white border border-gray-200 shadow-xs">
-
       <div className="flex items-center justify-between pb-2 border-b border-gray-100">
         <div>
-          <h2 className="text-xs font-bold uppercase text-gray-800">Pemindai QR Equipment</h2>
-          <p className="text-[11px] text-gray-500">Arahkan kamera ke stiker QR code</p>
+          <h2 className="text-xs font-bold uppercase text-gray-800">Pemindai QR Equipment Langsung</h2>
+          <p className="text-[11px] text-gray-500">Arahkan kamera langsung ke stiker QR fisik di lokasi</p>
         </div>
 
         <button
@@ -145,17 +115,17 @@ export default function InlineQrScanner({ onDetected, disabled }) {
         </button>
       </div>
 
-      <div className="relative bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center min-h-[250px] max-h-[300px] overflow-hidden">
+      <div className="relative bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center min-h-[260px] max-h-[320px] overflow-hidden">
         <div id={scannerContainerId} className="w-full h-full object-cover" />
 
         {(!scannerActive || errorMsg) && (
           <div className="absolute inset-0 bg-gray-50/95 flex flex-col items-center justify-center p-4 text-center space-y-2 z-10">
             <CameraOff size={28} className="text-gray-400" />
-            <p className="text-xs text-gray-700 max-w-[260px] leading-relaxed">
+            <p className="text-xs text-gray-700 max-w-[280px] leading-relaxed">
               {errorMsg || 'Kamera sedang dinonaktifkan.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <div className="flex items-center justify-center gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => {
@@ -164,54 +134,12 @@ export default function InlineQrScanner({ onDetected, disabled }) {
                 }}
                 className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium cursor-pointer shadow-xs"
               >
-                <RefreshCw size={12} /> Coba Buka Kamera
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={loadingFileScan}
-                className="inline-flex items-center gap-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded text-xs font-medium cursor-pointer"
-              >
-                {loadingFileScan ? (
-                  <Loader2 className="animate-spin" size={12} />
-                ) : (
-                  <ImageIcon size={12} />
-                )}
-                <span>Ambil Foto QR</span>
+                <RefreshCw size={12} /> Coba Buka Kamera Lagi
               </button>
             </div>
           </div>
         )}
       </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileScan}
-        className="hidden"
-      />
-
-      <form onSubmit={handleManualSubmit} className="flex items-center gap-2 pt-1">
-        <div className="relative flex-1 flex items-center">
-          <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />
-          <input
-            className="field field-with-icon text-xs h-8"
-            placeholder="Atau ketik kode (misal: APAR-A-001)..."
-            value={manualCode}
-            onChange={(e) => setManualCode(e.target.value)}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={!manualCode.trim()}
-          className="h-8 px-3 rounded bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium cursor-pointer disabled:opacity-40 shrink-0 transition"
-        >
-          Cek
-        </button>
-      </form>
     </div>
   );
 }

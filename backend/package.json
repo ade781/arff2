@@ -9,7 +9,8 @@
     "db:sync:force": "node src/scripts/sinkronDatabase.js --force",
     "db:seed": "node src/scripts/isiDataAwal.js",
     "db:import-excel": "node src/scripts/imporExcelZona.js",
-    "test": "node -e \"const fs=require('fs');const path=require('path');function walk(d){for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory())walk(p);else if(p.endsWith('.js'))require('child_process').execFileSync(process.execPath,['--check',p],{stdio:'inherit'});}}walk('src');\""
+    "test": "node --test test/suite.test.js",
+    "test:syntax": "node -e \"const fs=require('fs');const path=require('path');function walk(d){for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory())walk(p);else if(p.endsWith('.js'))require('child_process').execFileSync(process.execPath,['--check',p],{stdio:'inherit'});}}walk('src');\""
   },
   "keywords": [],
   "author": "",

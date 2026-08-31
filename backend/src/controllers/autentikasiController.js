@@ -12,8 +12,10 @@ async function login(req, res, next) {
       return errorResponse(res, 400, 'Username dan password wajib diisi');
     }
 
+    const cleanUsername = username.trim().toLowerCase();
+
     const user = await AnggotaArff.findOne({
-      where: { username: username.trim() },
+      where: { username: cleanUsername },
     });
 
     if (!user) {
