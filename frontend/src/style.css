@@ -165,42 +165,94 @@ body {
 /* Print Styling */
 @media print {
   @page {
-    size: A4 portrait;
+    size: auto;
     margin: 8mm;
   }
 
-  body * {
-    visibility: hidden;
+  html,
+  body,
+  #root,
+  .min-h-screen,
+  main {
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    position: static !important;
   }
 
-  #printable-qr-modal,
-  #printable-qr-modal *,
-  #printable-a4-sheet,
-  #printable-a4-sheet * {
-    visibility: visible;
+  .no-print,
+  nav,
+  aside,
+  header,
+  button,
+  input,
+  select,
+  .icon-button {
+    display: none !important;
   }
 
-  #printable-qr-modal,
+  .card,
+  section,
+  div {
+    box-shadow: none !important;
+    border-color: #cbd5e1 !important;
+    overflow: visible !important;
+  }
+
+  .overflow-x-auto {
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 8pt !important;
+    page-break-inside: auto !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  th, td {
+    border: 1px solid #94a3b8 !important;
+    padding: 2.5px 4px !important;
+  }
+
+  /* Modal QR print */
+  #printable-qr-modal {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: auto !important;
+    padding: 20px !important;
+    border: 2px solid #000000 !important;
+  }
+
+  /* A4 Sticker Sheet print */
   #printable-a4-sheet {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
-    border: none;
+    display: block !important;
+    width: 100% !important;
   }
 
   .a4-print-page {
     width: 100% !important;
-    min-height: 275mm !important;
+    min-height: 270mm !important;
     page-break-after: always;
     break-after: page;
     box-sizing: border-box;
-  }
-
-  .no-print {
-    display: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
   }
 }

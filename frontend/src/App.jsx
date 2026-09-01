@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 
-import LoginPage from './pages/auth/LoginPage';
-import AduanNonAnggotaPage from './pages/publik/AduanNonAnggotaPage';
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const AduanNonAnggotaPage = lazy(() => import('./pages/publik/AduanNonAnggotaPage'));
 
-import PetugasLayout from './components/layout/PetugasLayout';
-import PetugasScanPage from './pages/petugas/PetugasScanPage';
-import PetugasRiwayatPage from './pages/petugas/PetugasRiwayatPage';
+const PetugasLayout = lazy(() => import('./components/layout/PetugasLayout'));
+const PetugasScanPage = lazy(() => import('./pages/petugas/PetugasScanPage'));
+const PetugasRiwayatPage = lazy(() => import('./pages/petugas/PetugasRiwayatPage'));
 
-import AdminLayout from './components/layout/AdminLayout';
-import AdminRingkasanPage from './pages/admin/AdminRingkasanPage';
-import AdminEquipmentPage from './pages/admin/AdminEquipmentPage';
-import AdminTemplateQrPage from './pages/admin/AdminTemplateQrPage';
-import AdminRekapLaporanPage from './pages/admin/AdminRekapLaporanPage';
-import AdminMonitoringPage from './pages/admin/AdminMonitoringPage';
-import AdminPenggunaPage from './pages/admin/AdminPenggunaPage';
+const AdminLayout = lazy(() => import('./components/layout/AdminLayout'));
+const AdminRingkasanPage = lazy(() => import('./pages/admin/AdminRingkasanPage'));
+const AdminEquipmentPage = lazy(() => import('./pages/admin/AdminEquipmentPage'));
+const AdminTemplateQrPage = lazy(() => import('./pages/admin/AdminTemplateQrPage'));
+const AdminRekapLaporanPage = lazy(() => import('./pages/admin/AdminRekapLaporanPage'));
+const AdminMonitoringPage = lazy(() => import('./pages/admin/AdminMonitoringPage'));
+const AdminPenggunaPage = lazy(() => import('./pages/admin/AdminPenggunaPage'));
+
+function PageLoader() {
+  return (
+    <div className="min-h-[40vh] flex flex-col items-center justify-center p-8 text-slate-400 space-y-2">
+      <Loader2 className="animate-spin text-blue-600" size={24} />
+      <span className="text-xs font-medium text-slate-500">Memuat halaman...</span>
+    </div>
+  );
+}
 
 function AdminRoute({ children }) {
   const { session } = useAuth();
@@ -50,44 +60,45 @@ function RootRedirect() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
 
-        <Route path="/" element={<RootRedirect />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/aduan" element={<AduanNonAnggotaPage />} />
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/aduan" element={<AduanNonAnggotaPage />} />
+          <Route
+            path="/petugas"
+            element={
+              <PetugasRoute>
+                <PetugasLayout />
+              </PetugasRoute>
+            }
+          >
+            <Route index element={<PetugasScanPage />} />
+            <Route path="riwayat" element={<PetugasRiwayatPage />} />
+          </Route>
 
-        <Route
-          path="/petugas"
-          element={
-            <PetugasRoute>
-              <PetugasLayout />
-            </PetugasRoute>
-          }
-        >
-          <Route index element={<PetugasScanPage />} />
-          <Route path="riwayat" element={<PetugasRiwayatPage />} />
-        </Route>
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminRingkasanPage />} />
+            <Route path="ringkasan" element={<Navigate to="/admin" replace />} />
+            <Route path="items" element={<AdminEquipmentPage />} />
+            <Route path="template-qr" element={<AdminTemplateQrPage />} />
+            <Route path="rekap-laporan" element={<AdminRekapLaporanPage />} />
+            <Route path="monitoring" element={<AdminMonitoringPage />} />
+            <Route path="pengguna" element={<AdminPenggunaPage />} />
+          </Route>
 
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <AdminLayout />
-            </AdminRoute>
-          }
-        >
-          <Route index element={<AdminRingkasanPage />} />
-          <Route path="ringkasan" element={<Navigate to="/admin" replace />} />
-          <Route path="items" element={<AdminEquipmentPage />} />
-          <Route path="template-qr" element={<AdminTemplateQrPage />} />
-          <Route path="rekap-laporan" element={<AdminRekapLaporanPage />} />
-          <Route path="monitoring" element={<AdminMonitoringPage />} />
-          <Route path="pengguna" element={<AdminPenggunaPage />} />
-        </Route>
-
-        <Route path="*" element={<RootRedirect />} />
-      </Routes>
+          <Route path="*" element={<RootRedirect />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

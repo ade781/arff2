@@ -144,34 +144,36 @@ export default function AdminRekapLaporanPage() {
         </div>
       </div>
 
-      <RekapZonaTabs
-        items={items}
-        activeZona={activeZona}
-        onSelectZona={(z) => {
-          setActiveZona(z);
-          setFilterGedung('');
-        }}
-      />
+      <div className="no-print space-y-4">
+        <RekapZonaTabs
+          items={items}
+          activeZona={activeZona}
+          onSelectZona={(z) => {
+            setActiveZona(z);
+            setFilterGedung('');
+          }}
+        />
 
-      <RekapStatsCards
-        stats={stats}
-        activeZona={activeZona}
-        selectedBulan={selectedBulan}
-      />
+        <RekapStatsCards
+          stats={stats}
+          activeZona={activeZona}
+          selectedBulan={selectedBulan}
+        />
 
-      <RekapFilterToolbar
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedBulan={selectedBulan}
-        setSelectedBulan={setSelectedBulan}
-        selectedRegu={selectedRegu}
-        setSelectedRegu={setSelectedRegu}
-        filterGedung={filterGedung}
-        setFilterGedung={setFilterGedung}
-        filterKondisi={filterKondisi}
-        setFilterKondisi={setFilterKondisi}
-        gedungList={gedungList}
-      />
+        <RekapFilterToolbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedBulan={selectedBulan}
+          setSelectedBulan={setSelectedBulan}
+          selectedRegu={selectedRegu}
+          setSelectedRegu={setSelectedRegu}
+          filterGedung={filterGedung}
+          setFilterGedung={setFilterGedung}
+          filterKondisi={filterKondisi}
+          setFilterKondisi={setFilterKondisi}
+          gedungList={gedungList}
+        />
+      </div>
 
       <section className="card p-5 bg-white border border-gray-200 shadow-sm space-y-4">
         <RekapInspectionTable

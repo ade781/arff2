@@ -1,4 +1,3 @@
-const xlsx = require('xlsx');
 const { Op } = require('sequelize');
 const { LaporanAnggota, Item, AnggotaArff } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
@@ -255,7 +254,7 @@ async function exportExcelZona(req, res, next) {
       }
     });
 
-    const wb = exportHighFidelityZonaExcel({
+    const buffer = await exportHighFidelityZonaExcel({
       zona,
       bulanTahun,
       bulanLalu,
@@ -264,7 +263,6 @@ async function exportExcelZona(req, res, next) {
       petugasName: petugasName || req.user?.nama || 'Petugas ARFF',
     });
 
-    const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
     const cleanBulan = bulanTahun.replace(/\s+/g, '_');
     const filename = `REKAP_INSPEKSI_ARFF_ZONA_${zona}_${cleanBulan}.xlsx`;
 

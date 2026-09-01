@@ -99,57 +99,59 @@ export default function AdminTemplateQrPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        <div className="lg:col-span-7">
-          <A4SheetPreview
-            currentPageItems={currentPageItems}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalSelected={selectedItems.length}
-            onPrevPage={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            onNextPage={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            onPrint={() => handlePrint(true)}
-            qrCache={qrCache}
-            generating={generating}
-          />
+      <div className="no-print space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div className="lg:col-span-7">
+            <A4SheetPreview
+              currentPageItems={currentPageItems}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalSelected={selectedItems.length}
+              onPrevPage={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              onNextPage={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              onPrint={() => handlePrint(true)}
+              qrCache={qrCache}
+              generating={generating}
+            />
+          </div>
+
+          <div className="lg:col-span-5">
+            <QrSelectorPanel
+              filteredItems={filteredSelectorItems}
+              selectedIds={selectedIds}
+              onToggleItem={toggleItemSelection}
+              onSelectAll={() => {
+                const filteredIds = filteredSelectorItems.map((it) => it.id);
+                setSelectedIds((prev) => Array.from(new Set([...prev, ...filteredIds])));
+              }}
+              onDeselectAll={() => {
+                const filteredIds = new Set(filteredSelectorItems.map((it) => it.id));
+                setSelectedIds((prev) => prev.filter((id) => !filteredIds.has(id)));
+              }}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filterZona={filterZona}
+              onZonaChange={handleZonaChange}
+              filterGedung={filterGedung}
+              setFilterGedung={setFilterGedung}
+              filterJenis={filterJenis}
+              setFilterJenis={setFilterJenis}
+              availableGedungList={availableGedungList}
+            />
+          </div>
         </div>
 
-        <div className="lg:col-span-5">
-          <QrSelectorPanel
-            filteredItems={filteredSelectorItems}
-            selectedIds={selectedIds}
-            onToggleItem={toggleItemSelection}
-            onSelectAll={() => {
-              const filteredIds = filteredSelectorItems.map((it) => it.id);
-              setSelectedIds((prev) => Array.from(new Set([...prev, ...filteredIds])));
-            }}
-            onDeselectAll={() => {
-              const filteredIds = new Set(filteredSelectorItems.map((it) => it.id));
-              setSelectedIds((prev) => prev.filter((id) => !filteredIds.has(id)));
-            }}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filterZona={filterZona}
-            onZonaChange={handleZonaChange}
-            filterGedung={filterGedung}
-            setFilterGedung={setFilterGedung}
-            filterJenis={filterJenis}
-            setFilterJenis={setFilterJenis}
-            availableGedungList={availableGedungList}
-          />
-        </div>
+        <MasterEquipmentTable
+          items={items}
+          selectedIds={selectedIds}
+          onToggleItem={toggleItemSelection}
+          onSelectAll={() => setSelectedIds(items.map((it) => it.id))}
+          onDeselectAll={() => setSelectedIds([])}
+          bottomPage={bottomPage}
+          setBottomPage={setBottomPage}
+          bottomPageSize={bottomPageSize}
+        />
       </div>
-
-      <MasterEquipmentTable
-        items={items}
-        selectedIds={selectedIds}
-        onToggleItem={toggleItemSelection}
-        onSelectAll={() => setSelectedIds(items.map((it) => it.id))}
-        onDeselectAll={() => setSelectedIds([])}
-        bottomPage={bottomPage}
-        setBottomPage={setBottomPage}
-        bottomPageSize={bottomPageSize}
-      />
 
       <PrintableA4Document
         paginatedPages={paginatedPages}
