@@ -1,15 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import {
-  Clock,
-  History,
-  Image as ImageIcon,
-  Loader2,
-  RefreshCcw,
-  Search,
-} from 'lucide-react';
+import { History, RefreshCcw, Search } from 'lucide-react';
 import ImagePreviewModal from '../../components/common/ImagePreviewModal';
-import { StatusBadge, TypeBadge, ZoneBadge } from '../../components/common/Badges';
+import InspectionCard from '../../components/inspection/InspectionCard';
 
 export default function PetugasRiwayatPage() {
   const { history, loadHistory, loadingHistory } = useOutletContext();
@@ -25,6 +18,7 @@ export default function PetugasRiwayatPage() {
         !searchTerm ||
         item.kodeItem?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.namaItem?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.gedung?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.lokasi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lap.keterangan?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchStatus && matchSearch;
@@ -32,16 +26,17 @@ export default function PetugasRiwayatPage() {
   }, [history, filterStatus, searchTerm]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       <ImagePreviewModal
         imageUrl={previewImage?.url}
         title={previewImage?.title}
         onClose={() => setPreviewImage(null)}
       />
 
-      <section className="card p-3 space-y-2.5 bg-white border border-gray-200">
+      {/* Filter and Search Bar */}
+      <section className="card p-3 space-y-2 bg-white border border-gray-200 shadow-xs">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-gray-800 flex items-center gap-1.5">
+          <h2 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
             <History size={14} className="text-gray-600" />
             Riwayat Pemeriksaan ({filteredHistory.length})
           </h2>
@@ -53,7 +48,7 @@ export default function PetugasRiwayatPage() {
             className="text-gray-500 hover:text-gray-900 cursor-pointer p-1 rounded hover:bg-gray-100 transition"
             title="Segarkan Data"
           >
-            <RefreshCcw size={13} className={loadingHistory ? 'animate-spin' : ''} />
+            <RefreshCcw size={13} className={loadingHistory ? 'animate-spin text-blue-600' : ''} />
           </button>
         </div>
 
@@ -62,7 +57,7 @@ export default function PetugasRiwayatPage() {
             <Search className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />
             <input
               className="field field-with-icon text-xs h-8"
-              placeholder="Cari kode, nama, lokasi, catatan..."
+              placeholder="Cari kode, nama, lokasi..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -83,77 +78,21 @@ export default function PetugasRiwayatPage() {
         </div>
       </section>
 
-      <section className="space-y-2">
+      {/* History Cards List */}
+      <section className="space-y-1.5">
         {filteredHistory.length > 0 ? (
-          filteredHistory.map((lap) => {
-            const item = lap.item || lap.equipment || {};
-            const tone =
-              lap.status === 'baik' ? 'good' : lap.status === 'rusak' ? 'bad' : 'warn';
-
-            return (
-              <div
-                key={lap.id}
-                className="card p-3 text-xs space-y-2 bg-white border border-gray-200 shadow-xs"
-              >
-                <div className="flex items-start justify-between gap-1">
-                  <div>
-                    <div className="flex items-center gap-1.5 font-bold text-gray-900">
-                      <span className="font-mono text-sm">
-                        {item.kodeItem || item.kodeEquipment || `Item #${lap.idItem}`}
-                      </span>
-                      {item.zona ? <ZoneBadge zone={item.zona} /> : null}
-                      {item.jenis ? <TypeBadge type={item.jenis} /> : null}
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium mt-0.5">
-                      {item.namaItem || item.nama || 'Equipment ARFF'}
-                    </p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">{item.lokasi || '-'}</p>
-                  </div>
-
-                  <StatusBadge tone={tone}>{lap.status}</StatusBadge>
-                </div>
-
-                {lap.keterangan && (
-                  <p className="text-xs text-gray-700 bg-gray-50 p-2 rounded border border-gray-100">
-                    <span className="font-semibold text-gray-600">Catatan Temuan:</span>{' '}
-                    {lap.keterangan}
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between text-[11px] text-gray-400 pt-1.5 border-t border-gray-100">
-                  <span className="flex items-center gap-1">
-                    <Clock size={11} />
-                    {new Date(lap.createdAt || lap.waktuPemeriksaan).toLocaleString('id-ID', {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })}
-                  </span>
-
-                  {lap.foto ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPreviewImage({
-                          url: lap.foto,
-                          title: `Foto Bukti ${item.kodeItem || ''}`,
-                        })
-                      }
-                      className="flex items-center gap-1 text-blue-600 hover:text-blue-800 cursor-pointer font-medium"
-                    >
-                      <ImageIcon size={12} /> Lihat Foto
-                    </button>
-                  ) : (
-                    <span className="text-gray-400">Tanpa Foto</span>
-                  )}
-                </div>
-              </div>
-            );
-          })
+          filteredHistory.map((lap) => (
+            <InspectionCard
+              key={lap.id}
+              lap={lap}
+              onPreviewImage={setPreviewImage}
+            />
+          ))
         ) : (
-          <div className="card p-8 text-center text-gray-400 text-xs space-y-1 bg-white border border-gray-200">
-            <History size={24} className="mx-auto text-gray-300 mb-1" />
-            <p className="font-semibold text-gray-600">Tidak ada riwayat ditemukan.</p>
-            <p className="text-[11px]">Coba ubah kata kunci pencarian atau filter status.</p>
+          <div className="card p-6 text-center text-gray-400 text-xs space-y-1 bg-white border border-gray-200">
+            <History size={20} className="mx-auto text-gray-300 mb-1" />
+            <p className="font-medium text-gray-600">Tidak ada riwayat ditemukan.</p>
+            <p className="text-[11px]">Coba ubah kata kunci atau filter status.</p>
           </div>
         )}
       </section>

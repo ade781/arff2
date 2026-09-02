@@ -28,3 +28,8 @@ docs/
 scratch_*.xlsx
 *.xlsx
 !docs/*.xlsx
+
+# Automated Testing
+teesting/
+testing/
+

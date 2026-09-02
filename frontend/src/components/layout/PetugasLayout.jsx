@@ -30,64 +30,74 @@ export default function PetugasLayout() {
   }, []);
 
   function handleLogout() {
-    logout();
-    navigate('/login');
+    if (window.confirm('Apakah Anda yakin ingin keluar dari sesi petugas?')) {
+      logout();
+      navigate('/login');
+    }
   }
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center">
-
+      {/* Simple Clean Header */}
       <header className="w-full max-w-md bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30 shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-sm font-bold text-gray-900 leading-none">ARFF YIA</h1>
-            <p className="text-[11px] text-gray-500 mt-0.5">
-              Petugas: <span className="font-medium text-gray-700">{user?.nama || user?.username}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-gray-900 uppercase">ARFF YIA</span>
+              <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200 font-medium">
+                Petugas Lapangan
+              </span>
+            </div>
+            <p className="text-[11px] text-gray-600 mt-0.5">
+              {user?.nama || user?.username} {user?.regu ? `(${user.regu})` : ''}
             </p>
           </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-1 text-xs text-gray-600 hover:text-red-600 border border-gray-300 rounded px-2.5 py-1 cursor-pointer hover:bg-gray-50 transition"
+            className="flex items-center gap-1 text-xs text-gray-600 hover:text-red-600 border border-gray-200 rounded px-2.5 py-1 cursor-pointer hover:bg-gray-50 transition"
           >
-            <LogOut size={12} /> Keluar
+            <LogOut size={12} />
+            <span>Keluar</span>
           </button>
         </div>
 
-        <nav className="flex rounded border border-gray-200 bg-gray-100 p-1 mt-3 text-xs">
+        {/* Clean Segmented Nav */}
+        <nav className="flex rounded-lg border border-gray-200 bg-gray-100 p-1 mt-2.5 text-xs">
           <NavLink
             to="/petugas"
             end
             className={({ isActive }) =>
-              `flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded font-medium transition ${
+              `flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md font-medium transition ${
                 isActive
                   ? 'bg-white text-gray-900 font-semibold shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
               }`
             }
           >
-            <QrCode size={13} />
-            <span>Scan QR</span>
+            <QrCode size={14} />
+            <span>Scan QR Fisik</span>
           </NavLink>
 
           <NavLink
             to="/petugas/riwayat"
             className={({ isActive }) =>
-              `flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded font-medium transition ${
+              `flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md font-medium transition ${
                 isActive
                   ? 'bg-white text-gray-900 font-semibold shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
               }`
             }
           >
-            <History size={13} />
+            <History size={14} />
             <span>Riwayat ({history.length})</span>
           </NavLink>
         </nav>
       </header>
 
-      <main className="w-full max-w-md p-4 space-y-4 flex-1 pb-10">
+      {/* Main Content Area */}
+      <main className="w-full max-w-md p-4 space-y-3.5 flex-1 pb-10">
         <NoticeAlert notice={notice} />
         <Outlet
           context={{
