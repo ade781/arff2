@@ -10,6 +10,20 @@ import {
 import { StatusBadge, ZoneBadge } from '../../components/common/Badges';
 import { laporanAnggotaService } from '../../api/laporanAnggotaService';
 
+function parseChecklist(checklist) {
+  if (!checklist) return [];
+  if (Array.isArray(checklist)) return checklist;
+  if (typeof checklist === 'string') {
+    try {
+      const parsed = JSON.parse(checklist);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 export default function AdminMonitoringPage() {
   const {
     laporanAnggota,
@@ -57,7 +71,7 @@ export default function AdminMonitoringPage() {
     }
   }
 
-  const isFiltered = filters.status || filters.tanggalMulai || filters.tanggalSelesai;
+  const isFiltered = Boolean(filters.status || filters.tanggalMulai || filters.tanggalSelesai);
 
   return (
     <div className="space-y-4">
@@ -89,7 +103,7 @@ export default function AdminMonitoringPage() {
               </button>
             </div>
 
-            {subTab === 'anggota' ? (
+            {subTab === 'anggota' && (
               <button
                 className="h-7.5 inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-2 text-xs text-gray-700 hover:bg-gray-50 cursor-pointer"
                 type="button"
@@ -99,7 +113,7 @@ export default function AdminMonitoringPage() {
                 {exporting ? <Loader2 className="animate-spin" size={12} /> : <Download size={12} />}
                 <span>Export CSV</span>
               </button>
-            ) : null}
+            )}
 
             <button
               className="icon-button"
@@ -112,6 +126,7 @@ export default function AdminMonitoringPage() {
           </div>
         </div>
 
+        {/* Filters */}
         <div className="grid gap-2 sm:grid-cols-12 items-end">
           {subTab === 'anggota' ? (
             <div className="sm:col-span-4">
@@ -155,7 +170,7 @@ export default function AdminMonitoringPage() {
           </div>
 
           <div className="sm:col-span-2">
-            {isFiltered ? (
+            {isFiltered && (
               <button
                 className="h-8.5 w-full rounded border border-gray-300 bg-white text-xs text-gray-700 hover:bg-gray-50 cursor-pointer"
                 type="button"
@@ -163,101 +178,95 @@ export default function AdminMonitoringPage() {
               >
                 Reset Filter
               </button>
-            ) : null}
+            )}
           </div>
         </div>
 
-        {subTab === 'anggota' ? (
+        {/* SubTab: Anggota */}
+        {subTab === 'anggota' && (
           <div className="space-y-2">
-            {laporanAnggota.length ? laporanAnggota.map((lap) => {
-              const tone = lap.status === 'baik' ? 'good' : lap.status === 'rusak' ? 'bad' : 'warn';
-              const isExpanded = expandedId === lap.id;
+            {laporanAnggota.length ? (
+              laporanAnggota.map((lap) => {
+                const tone = lap.status === 'baik' ? 'good' : lap.status === 'rusak' ? 'bad' : 'warn';
+                const isExpanded = expandedId === lap.id;
+                const checklistArr = parseChecklist(lap.checklist);
 
-              return (
-                <div key={lap.id} className="rounded border border-gray-200 p-3 text-xs">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-1.5 font-medium text-gray-900">
-                        <span>{lap.item?.namaItem || `Equipment #${lap.idItem}`}</span>
-                        <span className="font-mono text-gray-500">[{lap.item?.kodeItem || '-'}]</span>
-                        {lap.item?.zona ? <ZoneBadge zone={lap.item.zona} /> : null}
-                      </div>
-                      <p className="text-[11px] text-gray-500 mt-0.5">
-                        Petugas: {lap.petugas?.nama || 'Petugas'} | {new Date(lap.createdAt).toLocaleString('id-ID')}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <StatusBadge tone={tone}>{lap.status}</StatusBadge>
-
-                      {lap.checklist && lap.checklist.length > 0 ? (
-                        <button
-                          className="p-1 text-gray-500 hover:text-gray-800 cursor-pointer"
-                          type="button"
-                          onClick={() => setExpandedId(isExpanded ? null : lap.id)}
-                          title="Detail Checklist"
-                        >
-                          {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  {lap.keterangan ? (
-                    <p className="mt-1.5 text-gray-700 bg-gray-50 p-2 rounded">
-                      <span className="font-medium">Catatan:</span> {lap.keterangan}
-                    </p>
-                  ) : null}
-
-                  {lap.penggantian ? (
-                    <p className="mt-1 text-amber-800 bg-amber-50 p-2 rounded">
-                      <span className="font-medium">Penggantian:</span> {lap.penggantian}
-                    </p>
-                  ) : null}
-
-                  {(() => {
-                    const checklistArr = Array.isArray(lap.checklist)
-                      ? lap.checklist
-                      : typeof lap.checklist === 'string'
-                      ? (() => { try { return JSON.parse(lap.checklist); } catch (e) { return []; } })()
-                      : [];
-
-                    if (isExpanded && checklistArr.length > 0) {
-                      return (
-                        <div className="mt-2 pt-2 border-t border-gray-100 space-y-1">
-                          <p className="text-[11px] font-medium text-gray-600">Rincian Checklist:</p>
-                          <div className="grid gap-1 sm:grid-cols-2">
-                            {checklistArr.map((item, idx) => (
-                              <div key={idx} className="flex items-center justify-between bg-gray-50 p-1.5 rounded text-[11px]">
-                                <span>{item.namaItem || item.nama}</span>
-                                <span className="font-medium">{item.status || 'Baik'}</span>
-                              </div>
-                            ))}
-                          </div>
+                return (
+                  <div key={lap.id} className="rounded border border-gray-200 p-3 text-xs space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-1.5 font-medium text-gray-900">
+                          <span>{lap.item?.namaItem || `Equipment #${lap.idItem}`}</span>
+                          <span className="font-mono text-gray-500">[{lap.item?.kodeItem || '-'}]</span>
+                          {lap.item?.zona ? <ZoneBadge zone={lap.item.zona} size="xs" /> : null}
                         </div>
-                      );
-                    }
-                    return null;
-                  })()}
-                </div>
-              );
-            }) : (
+                        <p className="text-[11px] text-gray-500 mt-0.5">
+                          Petugas: {lap.petugas?.nama || 'Petugas'} | {new Date(lap.createdAt).toLocaleString('id-ID')}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <StatusBadge tone={tone} size="xs">{lap.status}</StatusBadge>
+
+                        {checklistArr.length > 0 && (
+                          <button
+                            className="p-1 text-gray-500 hover:text-gray-800 cursor-pointer"
+                            type="button"
+                            onClick={() => setExpandedId(isExpanded ? null : lap.id)}
+                            title="Detail Checklist"
+                          >
+                            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {lap.keterangan && (
+                      <p className="text-gray-700 bg-gray-50 p-2 rounded">
+                        <span className="font-medium">Catatan:</span> {lap.keterangan}
+                      </p>
+                    )}
+
+                    {lap.penggantian && (
+                      <p className="text-amber-800 bg-amber-50 p-2 rounded">
+                        <span className="font-medium">Penggantian:</span> {lap.penggantian}
+                      </p>
+                    )}
+
+                    {isExpanded && checklistArr.length > 0 && (
+                      <div className="pt-2 border-t border-gray-100 space-y-1">
+                        <p className="text-[11px] font-medium text-gray-600">Rincian Checklist:</p>
+                        <div className="grid gap-1 sm:grid-cols-2">
+                          {checklistArr.map((item, idx) => (
+                            <div key={idx} className="flex items-center justify-between bg-gray-50 p-1.5 rounded text-[11px]">
+                              <span>{typeof item === 'string' ? item : (item.namaItem || item.nama || item.item)}</span>
+                              <span className="font-medium">{typeof item === 'object' && item.status ? item.status : 'OK'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
               <p className="text-center text-xs text-gray-400 py-6">Belum ada laporan pemeriksaan.</p>
             )}
           </div>
-        ) : null}
+        )}
 
-        {subTab === 'non_anggota' ? (
+        {/* SubTab: Non-Anggota */}
+        {subTab === 'non_anggota' && (
           <div className="space-y-2">
-            {laporanNonAnggota.length ? laporanNonAnggota.map((aduan) => {
-              return (
-                <div key={aduan.id} className="rounded border border-gray-200 p-3 text-xs">
+            {laporanNonAnggota.length ? (
+              laporanNonAnggota.map((aduan) => (
+                <div key={aduan.id} className="rounded border border-gray-200 p-3 text-xs space-y-1.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-1.5 font-medium text-gray-900">
                         <span>{aduan.item?.namaItem || `Equipment #${aduan.idItem}`}</span>
                         <span className="font-mono text-gray-500">[{aduan.item?.kodeItem || '-'}]</span>
-                        {aduan.item?.zona ? <ZoneBadge zone={aduan.item.zona} /> : null}
+                        {aduan.item?.zona ? <ZoneBadge zone={aduan.item.zona} size="xs" /> : null}
                       </div>
                       <p className="text-[11px] text-gray-500 mt-0.5">
                         Pelapor: {aduan.pelapor?.username || 'Non-Anggota'} {aduan.pelapor?.kontak ? `(${aduan.pelapor.kontak})` : ''} | {new Date(aduan.createdAt).toLocaleString('id-ID')}
@@ -265,16 +274,16 @@ export default function AdminMonitoringPage() {
                     </div>
                   </div>
 
-                  <p className="mt-1.5 text-gray-700 bg-gray-50 p-2 rounded">
+                  <p className="text-gray-700 bg-gray-50 p-2 rounded">
                     <span className="font-medium">Kendala:</span> {aduan.keterangan}
                   </p>
                 </div>
-              );
-            }) : (
+              ))
+            ) : (
               <p className="text-center text-xs text-gray-400 py-6">Belum ada aduan non-anggota.</p>
             )}
           </div>
-        ) : null}
+        )}
       </section>
     </div>
   );
