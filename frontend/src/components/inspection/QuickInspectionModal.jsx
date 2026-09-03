@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertTriangle, XCircle, X, Loader2, Send, Check } from 'lucide-react';
 import { TypeBadge, ZoneBadge } from '../common/Badges';
 import ImageUploader from '../common/ImageUploader';
@@ -19,20 +19,55 @@ const CHECKLIST_HYDRANT = [
   'Kunci pembuka box tersedia',
 ];
 
+const KONDISI_OPTIONS = [
+  {
+    value: 'baik',
+    label: 'Baik / Normal',
+    desc: 'Siap digunakan',
+    icon: CheckCircle2,
+    activeClass: 'border-emerald-600 bg-emerald-50 text-emerald-900',
+  },
+  {
+    value: 'perlu_perhatian',
+    label: 'Perlu Perhatian',
+    desc: 'Ada catatan ringan',
+    icon: AlertTriangle,
+    activeClass: 'border-amber-600 bg-amber-50 text-amber-900',
+  },
+  {
+    value: 'rusak',
+    label: 'Rusak / Kritis',
+    desc: 'Tidak berfungsi',
+    icon: XCircle,
+    activeClass: 'border-red-600 bg-red-50 text-red-900',
+  },
+];
+
 export default function QuickInspectionModal({ item, onSubmit, onClose, loading }) {
   const [kondisi, setKondisi] = useState('baik');
   const [keterangan, setKeterangan] = useState('');
   const [fotoFile, setFotoFile] = useState(null);
+  const [showLocationDetail, setShowLocationDetail] = useState(false);
 
-  if (!item) return null;
-
-  const target = item.item || item;
-  const isApar = target.jenis === 'apar';
+  const target = item ? (item.item || item) : null;
+  const isApar = target?.jenis === 'apar';
   const checklistSource = isApar ? CHECKLIST_APAR : CHECKLIST_HYDRANT;
 
-  const [checklistState, setChecklistState] = useState(
+  const [checklistState, setChecklistState] = useState(() =>
     checklistSource.reduce((acc, curr) => ({ ...acc, [curr]: true }), {})
   );
+
+  useEffect(() => {
+    if (item) {
+      setChecklistState(checklistSource.reduce((acc, curr) => ({ ...acc, [curr]: true }), {}));
+      setKondisi('baik');
+      setKeterangan('');
+      setFotoFile(null);
+      setShowLocationDetail(false);
+    }
+  }, [item]);
+
+  if (!item || !target) return null;
 
   function toggleItem(text) {
     setChecklistState((prev) => ({
@@ -59,32 +94,6 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
       fotoFile
     );
   }
-
-  const kondisiOptions = [
-    {
-      value: 'baik',
-      label: 'Baik / Normal',
-      desc: 'Siap digunakan',
-      icon: CheckCircle2,
-      activeClass: 'border-emerald-600 bg-emerald-50 text-emerald-900',
-    },
-    {
-      value: 'perlu_perhatian',
-      label: 'Perlu Perhatian',
-      desc: 'Ada catatan ringan',
-      icon: AlertTriangle,
-      activeClass: 'border-amber-600 bg-amber-50 text-amber-900',
-    },
-    {
-      value: 'rusak',
-      label: 'Rusak / Kritis',
-      desc: 'Tidak berfungsi',
-      icon: XCircle,
-      activeClass: 'border-red-600 bg-red-50 text-red-900',
-    },
-  ];
-
-  const [showLocationDetail, setShowLocationDetail] = useState(false);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4">
@@ -167,7 +176,7 @@ export default function QuickInspectionModal({ item, onSubmit, onClose, loading 
               Kondisi Kelayakan <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {kondisiOptions.map((opt) => {
+              {KONDISI_OPTIONS.map((opt) => {
                 const Icon = opt.icon;
                 const isSelected = kondisi === opt.value;
                 return (

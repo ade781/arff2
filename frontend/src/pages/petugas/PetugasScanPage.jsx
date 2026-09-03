@@ -71,12 +71,14 @@ export default function PetugasScanPage() {
     <div className="space-y-3.5">
 
       {/* Inspection Modal */}
-      <QuickInspectionModal
-        item={scannedItem}
-        onSubmit={handleInspectionSubmit}
-        onClose={() => setScannedItem(null)}
-        loading={loadingSubmit}
-      />
+      {scannedItem && (
+        <QuickInspectionModal
+          item={scannedItem}
+          onSubmit={handleInspectionSubmit}
+          onClose={() => setScannedItem(null)}
+          loading={loadingSubmit}
+        />
+      )}
 
       {/* QR Camera Scanner */}
       <section className="space-y-2">
